@@ -1,0 +1,7 @@
+# ninja log v6
+27	444	7545124038693900	CMakeFiles/JEU.dir/main.cpp.obj	67b743e64d049d6
+11	417	7545124038544584	CMakeFiles/petitsChevaux.dir/jeu_petits_chevaux.cpp.obj	11e8e1bccbff9492
+418	651	7545124042603731	libpetitsChevaux.a	ddbc00e72d665cb
+651	771	7545124044941441	JEU.exe	f7e92407ce47cda0
+15	272	7545124038576059	CMakeFiles/petitsChevaux.dir/joueur_humain.cpp.obj	30b98c28fa558699
+21	274	7545124038640375	CMakeFiles/petitsChevaux.dir/joueur_ia.cpp.obj	f44c5f5d717f9e96
