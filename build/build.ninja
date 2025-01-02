@@ -41,7 +41,7 @@ include CMakeFiles/rules.ninja
 
 cmake_ninja_workdir = C$:/Users/SimonBressot/OneDrive$ -$ bizofficeonecorp/Documents/Polytech$ Nice/petitsChevaux/build/
 # =============================================================================
-# Object build statements for STATIC_LIBRARY target petitsChevaux
+# Object build statements for EXECUTABLE target petitsChevaux
 
 
 #############################################
@@ -49,86 +49,47 @@ cmake_ninja_workdir = C$:/Users/SimonBressot/OneDrive$ -$ bizofficeonecorp/Docum
 
 build cmake_object_order_depends_target_petitsChevaux: phony || .
 
-build CMakeFiles/petitsChevaux.dir/jeu_petits_chevaux.cpp.obj: CXX_COMPILER__petitsChevaux_unscanned_Debug C$:/Users/SimonBressot/OneDrive$ -$ bizofficeonecorp/Documents/Polytech$ Nice/petitsChevaux/jeu_petits_chevaux.cpp || cmake_object_order_depends_target_petitsChevaux
-  DEP_FILE = CMakeFiles\petitsChevaux.dir\jeu_petits_chevaux.cpp.obj.d
-  FLAGS = -g
-  INCLUDES = -I"C:/Users/SimonBressot/OneDrive - bizofficeonecorp/Documents/Polytech Nice/petitsChevaux"
+build CMakeFiles/petitsChevaux.dir/main.cpp.obj: CXX_COMPILER__petitsChevaux_unscanned_Debug C$:/Users/SimonBressot/OneDrive$ -$ bizofficeonecorp/Documents/Polytech$ Nice/petitsChevaux/main.cpp || cmake_object_order_depends_target_petitsChevaux
+  DEP_FILE = CMakeFiles\petitsChevaux.dir\main.cpp.obj.d
+  FLAGS = -g -std=gnu++17
   OBJECT_DIR = CMakeFiles\petitsChevaux.dir
   OBJECT_FILE_DIR = CMakeFiles\petitsChevaux.dir
-  TARGET_COMPILE_PDB = CMakeFiles\petitsChevaux.dir\petitsChevaux.pdb
-  TARGET_PDB = libpetitsChevaux.pdb
 
-build CMakeFiles/petitsChevaux.dir/joueur_humain.cpp.obj: CXX_COMPILER__petitsChevaux_unscanned_Debug C$:/Users/SimonBressot/OneDrive$ -$ bizofficeonecorp/Documents/Polytech$ Nice/petitsChevaux/joueur_humain.cpp || cmake_object_order_depends_target_petitsChevaux
-  DEP_FILE = CMakeFiles\petitsChevaux.dir\joueur_humain.cpp.obj.d
-  FLAGS = -g
-  INCLUDES = -I"C:/Users/SimonBressot/OneDrive - bizofficeonecorp/Documents/Polytech Nice/petitsChevaux"
+build CMakeFiles/petitsChevaux.dir/menu.cpp.obj: CXX_COMPILER__petitsChevaux_unscanned_Debug C$:/Users/SimonBressot/OneDrive$ -$ bizofficeonecorp/Documents/Polytech$ Nice/petitsChevaux/menu.cpp || cmake_object_order_depends_target_petitsChevaux
+  DEP_FILE = CMakeFiles\petitsChevaux.dir\menu.cpp.obj.d
+  FLAGS = -g -std=gnu++17
   OBJECT_DIR = CMakeFiles\petitsChevaux.dir
   OBJECT_FILE_DIR = CMakeFiles\petitsChevaux.dir
-  TARGET_COMPILE_PDB = CMakeFiles\petitsChevaux.dir\petitsChevaux.pdb
-  TARGET_PDB = libpetitsChevaux.pdb
 
-build CMakeFiles/petitsChevaux.dir/joueur_ia.cpp.obj: CXX_COMPILER__petitsChevaux_unscanned_Debug C$:/Users/SimonBressot/OneDrive$ -$ bizofficeonecorp/Documents/Polytech$ Nice/petitsChevaux/joueur_ia.cpp || cmake_object_order_depends_target_petitsChevaux
-  DEP_FILE = CMakeFiles\petitsChevaux.dir\joueur_ia.cpp.obj.d
-  FLAGS = -g
-  INCLUDES = -I"C:/Users/SimonBressot/OneDrive - bizofficeonecorp/Documents/Polytech Nice/petitsChevaux"
+build CMakeFiles/petitsChevaux.dir/jeu.cpp.obj: CXX_COMPILER__petitsChevaux_unscanned_Debug C$:/Users/SimonBressot/OneDrive$ -$ bizofficeonecorp/Documents/Polytech$ Nice/petitsChevaux/jeu.cpp || cmake_object_order_depends_target_petitsChevaux
+  DEP_FILE = CMakeFiles\petitsChevaux.dir\jeu.cpp.obj.d
+  FLAGS = -g -std=gnu++17
   OBJECT_DIR = CMakeFiles\petitsChevaux.dir
   OBJECT_FILE_DIR = CMakeFiles\petitsChevaux.dir
-  TARGET_COMPILE_PDB = CMakeFiles\petitsChevaux.dir\petitsChevaux.pdb
-  TARGET_PDB = libpetitsChevaux.pdb
+
+build CMakeFiles/petitsChevaux.dir/graphique.cpp.obj: CXX_COMPILER__petitsChevaux_unscanned_Debug C$:/Users/SimonBressot/OneDrive$ -$ bizofficeonecorp/Documents/Polytech$ Nice/petitsChevaux/graphique.cpp || cmake_object_order_depends_target_petitsChevaux
+  DEP_FILE = CMakeFiles\petitsChevaux.dir\graphique.cpp.obj.d
+  FLAGS = -g -std=gnu++17
+  OBJECT_DIR = CMakeFiles\petitsChevaux.dir
+  OBJECT_FILE_DIR = CMakeFiles\petitsChevaux.dir
 
 
 # =============================================================================
-# Link build statements for STATIC_LIBRARY target petitsChevaux
+# Link build statements for EXECUTABLE target petitsChevaux
 
 
 #############################################
-# Link the static library libpetitsChevaux.a
+# Link the executable petitsChevaux.exe
 
-build libpetitsChevaux.a: CXX_STATIC_LIBRARY_LINKER__petitsChevaux_Debug CMakeFiles/petitsChevaux.dir/jeu_petits_chevaux.cpp.obj CMakeFiles/petitsChevaux.dir/joueur_humain.cpp.obj CMakeFiles/petitsChevaux.dir/joueur_ia.cpp.obj
-  LANGUAGE_COMPILE_FLAGS = -g
+build petitsChevaux.exe: CXX_EXECUTABLE_LINKER__petitsChevaux_Debug CMakeFiles/petitsChevaux.dir/main.cpp.obj CMakeFiles/petitsChevaux.dir/menu.cpp.obj CMakeFiles/petitsChevaux.dir/jeu.cpp.obj CMakeFiles/petitsChevaux.dir/graphique.cpp.obj | C$:/msys64/ucrt64/lib/libsfml-graphics.dll.a C$:/msys64/ucrt64/lib/libsfml-window.dll.a C$:/msys64/ucrt64/lib/libsfml-system.dll.a
+  FLAGS = -g
+  LINK_LIBRARIES = C:/msys64/ucrt64/lib/libsfml-graphics.dll.a  C:/msys64/ucrt64/lib/libsfml-window.dll.a  C:/msys64/ucrt64/lib/libsfml-system.dll.a  -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
   OBJECT_DIR = CMakeFiles\petitsChevaux.dir
   POST_BUILD = cd .
   PRE_LINK = cd .
-  TARGET_COMPILE_PDB = CMakeFiles\petitsChevaux.dir\petitsChevaux.pdb
-  TARGET_FILE = libpetitsChevaux.a
-  TARGET_PDB = libpetitsChevaux.pdb
-
-# =============================================================================
-# Object build statements for EXECUTABLE target JEU
-
-
-#############################################
-# Order-only phony target for JEU
-
-build cmake_object_order_depends_target_JEU: phony || cmake_object_order_depends_target_petitsChevaux
-
-build CMakeFiles/JEU.dir/main.cpp.obj: CXX_COMPILER__JEU_unscanned_Debug C$:/Users/SimonBressot/OneDrive$ -$ bizofficeonecorp/Documents/Polytech$ Nice/petitsChevaux/main.cpp || cmake_object_order_depends_target_JEU
-  DEP_FILE = CMakeFiles\JEU.dir\main.cpp.obj.d
-  FLAGS = -g
-  INCLUDES = -I"C:/Users/SimonBressot/OneDrive - bizofficeonecorp/Documents/Polytech Nice/petitsChevaux"
-  OBJECT_DIR = CMakeFiles\JEU.dir
-  OBJECT_FILE_DIR = CMakeFiles\JEU.dir
-  TARGET_COMPILE_PDB = CMakeFiles\JEU.dir\
-  TARGET_PDB = JEU.pdb
-
-
-# =============================================================================
-# Link build statements for EXECUTABLE target JEU
-
-
-#############################################
-# Link the executable JEU.exe
-
-build JEU.exe: CXX_EXECUTABLE_LINKER__JEU_Debug CMakeFiles/JEU.dir/main.cpp.obj | libpetitsChevaux.a || libpetitsChevaux.a
-  FLAGS = -g
-  LINK_LIBRARIES = libpetitsChevaux.a  -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
-  OBJECT_DIR = CMakeFiles\JEU.dir
-  POST_BUILD = cd .
-  PRE_LINK = cd .
-  TARGET_COMPILE_PDB = CMakeFiles\JEU.dir\
-  TARGET_FILE = JEU.exe
-  TARGET_IMPLIB = libJEU.dll.a
-  TARGET_PDB = JEU.pdb
+  TARGET_FILE = petitsChevaux.exe
+  TARGET_IMPLIB = libpetitsChevaux.dll.a
+  TARGET_PDB = petitsChevaux.exe.dbg
 
 
 #############################################
@@ -156,9 +117,7 @@ build rebuild_cache: phony CMakeFiles/rebuild_cache.util
 # =============================================================================
 # Target aliases.
 
-build JEU: phony JEU.exe
-
-build petitsChevaux: phony libpetitsChevaux.a
+build petitsChevaux: phony petitsChevaux.exe
 
 # =============================================================================
 # Folder targets.
@@ -168,7 +127,14 @@ build petitsChevaux: phony libpetitsChevaux.a
 #############################################
 # Folder: C:/Users/SimonBressot/OneDrive - bizofficeonecorp/Documents/Polytech Nice/petitsChevaux/build
 
-build all: phony libpetitsChevaux.a JEU.exe
+build codegen: phony
+
+# =============================================================================
+
+#############################################
+# Folder: C:/Users/SimonBressot/OneDrive - bizofficeonecorp/Documents/Polytech Nice/petitsChevaux/build
+
+build all: phony petitsChevaux.exe
 
 # =============================================================================
 # Built-in targets
@@ -177,14 +143,14 @@ build all: phony libpetitsChevaux.a JEU.exe
 #############################################
 # Re-run CMake if any of its inputs changed.
 
-build build.ninja: RERUN_CMAKE | C$:/Users/SimonBressot/OneDrive$ -$ bizofficeonecorp/Documents/Polytech$ Nice/petitsChevaux/CMakeLists.txt C$:/msys64/mingw64/share/cmake/Modules/CMakeCCompiler.cmake.in C$:/msys64/mingw64/share/cmake/Modules/CMakeCCompilerABI.c C$:/msys64/mingw64/share/cmake/Modules/CMakeCInformation.cmake C$:/msys64/mingw64/share/cmake/Modules/CMakeCXXCompiler.cmake.in C$:/msys64/mingw64/share/cmake/Modules/CMakeCXXCompilerABI.cpp C$:/msys64/mingw64/share/cmake/Modules/CMakeCXXInformation.cmake C$:/msys64/mingw64/share/cmake/Modules/CMakeCommonLanguageInclude.cmake C$:/msys64/mingw64/share/cmake/Modules/CMakeCompilerIdDetection.cmake C$:/msys64/mingw64/share/cmake/Modules/CMakeDetermineCCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/CMakeDetermineCXXCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/CMakeDetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/CMakeDetermineCompilerABI.cmake C$:/msys64/mingw64/share/cmake/Modules/CMakeDetermineCompilerId.cmake C$:/msys64/mingw64/share/cmake/Modules/CMakeDetermineCompilerSupport.cmake C$:/msys64/mingw64/share/cmake/Modules/CMakeDetermineRCCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/CMakeDetermineSystem.cmake C$:/msys64/mingw64/share/cmake/Modules/CMakeFindBinUtils.cmake C$:/msys64/mingw64/share/cmake/Modules/CMakeGenericSystem.cmake C$:/msys64/mingw64/share/cmake/Modules/CMakeInitializeConfigs.cmake C$:/msys64/mingw64/share/cmake/Modules/CMakeLanguageInformation.cmake C$:/msys64/mingw64/share/cmake/Modules/CMakeNinjaFindMake.cmake C$:/msys64/mingw64/share/cmake/Modules/CMakeParseImplicitIncludeInfo.cmake C$:/msys64/mingw64/share/cmake/Modules/CMakeParseImplicitLinkInfo.cmake C$:/msys64/mingw64/share/cmake/Modules/CMakeParseLibraryArchitecture.cmake C$:/msys64/mingw64/share/cmake/Modules/CMakeRCCompiler.cmake.in C$:/msys64/mingw64/share/cmake/Modules/CMakeRCInformation.cmake C$:/msys64/mingw64/share/cmake/Modules/CMakeSystem.cmake.in C$:/msys64/mingw64/share/cmake/Modules/CMakeSystemSpecificInformation.cmake C$:/msys64/mingw64/share/cmake/Modules/CMakeSystemSpecificInitialize.cmake C$:/msys64/mingw64/share/cmake/Modules/CMakeTestCCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/CMakeTestCXXCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/CMakeTestCompilerCommon.cmake C$:/msys64/mingw64/share/cmake/Modules/CMakeTestRCCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/ADSP-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/ARMCC-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/ARMClang-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/AppleClang-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/Borland-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/Bruce-C-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/CMakeCommonCompilerMacros.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/Clang-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/Clang-DetermineCompilerInternal.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/Compaq-C-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/Compaq-CXX-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/Cray-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/CrayClang-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/Embarcadero-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/Fujitsu-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/FujitsuClang-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/GHS-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/GNU-C-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/GNU-C.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/GNU-CXX-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/GNU-CXX.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/GNU-FindBinUtils.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/GNU.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/HP-C-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/HP-CXX-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/IAR-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/IBMCPP-C-DetermineVersionInternal.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/IBMCPP-CXX-DetermineVersionInternal.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/IBMClang-C-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/IBMClang-CXX-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/Intel-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/IntelLLVM-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/LCC-C-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/LCC-CXX-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/MSVC-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/NVHPC-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/NVIDIA-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/OpenWatcom-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/OrangeC-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/PGI-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/PathScale-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/SCO-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/SDCC-C-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/SunPro-C-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/SunPro-CXX-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/TI-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/TIClang-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/Tasking-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/TinyCC-C-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/VisualAge-C-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/VisualAge-CXX-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/Watcom-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/XL-C-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/XL-CXX-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/XLClang-C-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/XLClang-CXX-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/zOS-C-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/zOS-CXX-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Internal/CMakeCLinkerInformation.cmake C$:/msys64/mingw64/share/cmake/Modules/Internal/CMakeCXXLinkerInformation.cmake C$:/msys64/mingw64/share/cmake/Modules/Internal/CMakeCommonLinkerInformation.cmake C$:/msys64/mingw64/share/cmake/Modules/Internal/CMakeDetermineLinkerId.cmake C$:/msys64/mingw64/share/cmake/Modules/Internal/FeatureTesting.cmake C$:/msys64/mingw64/share/cmake/Modules/Linker/GNU-C.cmake C$:/msys64/mingw64/share/cmake/Modules/Linker/GNU-CXX.cmake C$:/msys64/mingw64/share/cmake/Modules/Linker/GNU.cmake C$:/msys64/mingw64/share/cmake/Modules/Platform/Linker/GNU.cmake C$:/msys64/mingw64/share/cmake/Modules/Platform/Linker/Windows-GNU-C.cmake C$:/msys64/mingw64/share/cmake/Modules/Platform/Linker/Windows-GNU-CXX.cmake C$:/msys64/mingw64/share/cmake/Modules/Platform/Linker/Windows-GNU.cmake C$:/msys64/mingw64/share/cmake/Modules/Platform/Windows-Determine-CXX.cmake C$:/msys64/mingw64/share/cmake/Modules/Platform/Windows-GNU-C-ABI.cmake C$:/msys64/mingw64/share/cmake/Modules/Platform/Windows-GNU-C.cmake C$:/msys64/mingw64/share/cmake/Modules/Platform/Windows-GNU-CXX-ABI.cmake C$:/msys64/mingw64/share/cmake/Modules/Platform/Windows-GNU-CXX.cmake C$:/msys64/mingw64/share/cmake/Modules/Platform/Windows-GNU.cmake C$:/msys64/mingw64/share/cmake/Modules/Platform/Windows-Initialize.cmake C$:/msys64/mingw64/share/cmake/Modules/Platform/Windows-windres.cmake C$:/msys64/mingw64/share/cmake/Modules/Platform/Windows.cmake C$:/msys64/mingw64/share/cmake/Modules/Platform/WindowsPaths.cmake CMakeCache.txt CMakeFiles/3.31.0/CMakeCCompiler.cmake CMakeFiles/3.31.0/CMakeCXXCompiler.cmake CMakeFiles/3.31.0/CMakeRCCompiler.cmake CMakeFiles/3.31.0/CMakeSystem.cmake
+build build.ninja: RERUN_CMAKE | C$:/Users/SimonBressot/OneDrive$ -$ bizofficeonecorp/Documents/Polytech$ Nice/petitsChevaux/CMakeLists.txt C$:/msys64/mingw64/share/cmake/Modules/CMakeCXXInformation.cmake C$:/msys64/mingw64/share/cmake/Modules/CMakeCommonLanguageInclude.cmake C$:/msys64/mingw64/share/cmake/Modules/CMakeGenericSystem.cmake C$:/msys64/mingw64/share/cmake/Modules/CMakeInitializeConfigs.cmake C$:/msys64/mingw64/share/cmake/Modules/CMakeLanguageInformation.cmake C$:/msys64/mingw64/share/cmake/Modules/CMakeRCInformation.cmake C$:/msys64/mingw64/share/cmake/Modules/CMakeSystemSpecificInformation.cmake C$:/msys64/mingw64/share/cmake/Modules/CMakeSystemSpecificInitialize.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/CMakeCommonCompilerMacros.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/GNU-CXX.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/GNU.cmake C$:/msys64/mingw64/share/cmake/Modules/Internal/CMakeCXXLinkerInformation.cmake C$:/msys64/mingw64/share/cmake/Modules/Internal/CMakeCommonLinkerInformation.cmake C$:/msys64/mingw64/share/cmake/Modules/Linker/GNU-CXX.cmake C$:/msys64/mingw64/share/cmake/Modules/Linker/GNU.cmake C$:/msys64/mingw64/share/cmake/Modules/Platform/Linker/GNU.cmake C$:/msys64/mingw64/share/cmake/Modules/Platform/Linker/Windows-GNU-CXX.cmake C$:/msys64/mingw64/share/cmake/Modules/Platform/Linker/Windows-GNU.cmake C$:/msys64/mingw64/share/cmake/Modules/Platform/Windows-GNU-CXX-ABI.cmake C$:/msys64/mingw64/share/cmake/Modules/Platform/Windows-GNU-CXX.cmake C$:/msys64/mingw64/share/cmake/Modules/Platform/Windows-GNU.cmake C$:/msys64/mingw64/share/cmake/Modules/Platform/Windows-Initialize.cmake C$:/msys64/mingw64/share/cmake/Modules/Platform/Windows-windres.cmake C$:/msys64/mingw64/share/cmake/Modules/Platform/Windows.cmake C$:/msys64/mingw64/share/cmake/Modules/Platform/WindowsPaths.cmake C$:/msys64/ucrt64/lib/cmake/SFML/SFMLConfig.cmake C$:/msys64/ucrt64/lib/cmake/SFML/SFMLConfigDependencies.cmake C$:/msys64/ucrt64/lib/cmake/SFML/SFMLConfigVersion.cmake C$:/msys64/ucrt64/lib/cmake/SFML/SFMLSharedTargets-release.cmake C$:/msys64/ucrt64/lib/cmake/SFML/SFMLSharedTargets.cmake CMakeCache.txt CMakeFiles/3.31.1/CMakeCXXCompiler.cmake CMakeFiles/3.31.1/CMakeRCCompiler.cmake CMakeFiles/3.31.1/CMakeSystem.cmake
   pool = console
 
 
 #############################################
 # A missing CMake input file is not an error.
 
-build C$:/Users/SimonBressot/OneDrive$ -$ bizofficeonecorp/Documents/Polytech$ Nice/petitsChevaux/CMakeLists.txt C$:/msys64/mingw64/share/cmake/Modules/CMakeCCompiler.cmake.in C$:/msys64/mingw64/share/cmake/Modules/CMakeCCompilerABI.c C$:/msys64/mingw64/share/cmake/Modules/CMakeCInformation.cmake C$:/msys64/mingw64/share/cmake/Modules/CMakeCXXCompiler.cmake.in C$:/msys64/mingw64/share/cmake/Modules/CMakeCXXCompilerABI.cpp C$:/msys64/mingw64/share/cmake/Modules/CMakeCXXInformation.cmake C$:/msys64/mingw64/share/cmake/Modules/CMakeCommonLanguageInclude.cmake C$:/msys64/mingw64/share/cmake/Modules/CMakeCompilerIdDetection.cmake C$:/msys64/mingw64/share/cmake/Modules/CMakeDetermineCCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/CMakeDetermineCXXCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/CMakeDetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/CMakeDetermineCompilerABI.cmake C$:/msys64/mingw64/share/cmake/Modules/CMakeDetermineCompilerId.cmake C$:/msys64/mingw64/share/cmake/Modules/CMakeDetermineCompilerSupport.cmake C$:/msys64/mingw64/share/cmake/Modules/CMakeDetermineRCCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/CMakeDetermineSystem.cmake C$:/msys64/mingw64/share/cmake/Modules/CMakeFindBinUtils.cmake C$:/msys64/mingw64/share/cmake/Modules/CMakeGenericSystem.cmake C$:/msys64/mingw64/share/cmake/Modules/CMakeInitializeConfigs.cmake C$:/msys64/mingw64/share/cmake/Modules/CMakeLanguageInformation.cmake C$:/msys64/mingw64/share/cmake/Modules/CMakeNinjaFindMake.cmake C$:/msys64/mingw64/share/cmake/Modules/CMakeParseImplicitIncludeInfo.cmake C$:/msys64/mingw64/share/cmake/Modules/CMakeParseImplicitLinkInfo.cmake C$:/msys64/mingw64/share/cmake/Modules/CMakeParseLibraryArchitecture.cmake C$:/msys64/mingw64/share/cmake/Modules/CMakeRCCompiler.cmake.in C$:/msys64/mingw64/share/cmake/Modules/CMakeRCInformation.cmake C$:/msys64/mingw64/share/cmake/Modules/CMakeSystem.cmake.in C$:/msys64/mingw64/share/cmake/Modules/CMakeSystemSpecificInformation.cmake C$:/msys64/mingw64/share/cmake/Modules/CMakeSystemSpecificInitialize.cmake C$:/msys64/mingw64/share/cmake/Modules/CMakeTestCCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/CMakeTestCXXCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/CMakeTestCompilerCommon.cmake C$:/msys64/mingw64/share/cmake/Modules/CMakeTestRCCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/ADSP-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/ARMCC-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/ARMClang-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/AppleClang-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/Borland-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/Bruce-C-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/CMakeCommonCompilerMacros.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/Clang-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/Clang-DetermineCompilerInternal.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/Compaq-C-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/Compaq-CXX-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/Cray-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/CrayClang-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/Embarcadero-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/Fujitsu-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/FujitsuClang-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/GHS-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/GNU-C-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/GNU-C.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/GNU-CXX-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/GNU-CXX.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/GNU-FindBinUtils.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/GNU.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/HP-C-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/HP-CXX-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/IAR-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/IBMCPP-C-DetermineVersionInternal.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/IBMCPP-CXX-DetermineVersionInternal.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/IBMClang-C-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/IBMClang-CXX-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/Intel-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/IntelLLVM-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/LCC-C-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/LCC-CXX-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/MSVC-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/NVHPC-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/NVIDIA-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/OpenWatcom-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/OrangeC-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/PGI-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/PathScale-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/SCO-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/SDCC-C-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/SunPro-C-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/SunPro-CXX-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/TI-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/TIClang-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/Tasking-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/TinyCC-C-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/VisualAge-C-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/VisualAge-CXX-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/Watcom-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/XL-C-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/XL-CXX-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/XLClang-C-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/XLClang-CXX-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/zOS-C-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/zOS-CXX-DetermineCompiler.cmake C$:/msys64/mingw64/share/cmake/Modules/Internal/CMakeCLinkerInformation.cmake C$:/msys64/mingw64/share/cmake/Modules/Internal/CMakeCXXLinkerInformation.cmake C$:/msys64/mingw64/share/cmake/Modules/Internal/CMakeCommonLinkerInformation.cmake C$:/msys64/mingw64/share/cmake/Modules/Internal/CMakeDetermineLinkerId.cmake C$:/msys64/mingw64/share/cmake/Modules/Internal/FeatureTesting.cmake C$:/msys64/mingw64/share/cmake/Modules/Linker/GNU-C.cmake C$:/msys64/mingw64/share/cmake/Modules/Linker/GNU-CXX.cmake C$:/msys64/mingw64/share/cmake/Modules/Linker/GNU.cmake C$:/msys64/mingw64/share/cmake/Modules/Platform/Linker/GNU.cmake C$:/msys64/mingw64/share/cmake/Modules/Platform/Linker/Windows-GNU-C.cmake C$:/msys64/mingw64/share/cmake/Modules/Platform/Linker/Windows-GNU-CXX.cmake C$:/msys64/mingw64/share/cmake/Modules/Platform/Linker/Windows-GNU.cmake C$:/msys64/mingw64/share/cmake/Modules/Platform/Windows-Determine-CXX.cmake C$:/msys64/mingw64/share/cmake/Modules/Platform/Windows-GNU-C-ABI.cmake C$:/msys64/mingw64/share/cmake/Modules/Platform/Windows-GNU-C.cmake C$:/msys64/mingw64/share/cmake/Modules/Platform/Windows-GNU-CXX-ABI.cmake C$:/msys64/mingw64/share/cmake/Modules/Platform/Windows-GNU-CXX.cmake C$:/msys64/mingw64/share/cmake/Modules/Platform/Windows-GNU.cmake C$:/msys64/mingw64/share/cmake/Modules/Platform/Windows-Initialize.cmake C$:/msys64/mingw64/share/cmake/Modules/Platform/Windows-windres.cmake C$:/msys64/mingw64/share/cmake/Modules/Platform/Windows.cmake C$:/msys64/mingw64/share/cmake/Modules/Platform/WindowsPaths.cmake CMakeCache.txt CMakeFiles/3.31.0/CMakeCCompiler.cmake CMakeFiles/3.31.0/CMakeCXXCompiler.cmake CMakeFiles/3.31.0/CMakeRCCompiler.cmake CMakeFiles/3.31.0/CMakeSystem.cmake: phony
+build C$:/Users/SimonBressot/OneDrive$ -$ bizofficeonecorp/Documents/Polytech$ Nice/petitsChevaux/CMakeLists.txt C$:/msys64/mingw64/share/cmake/Modules/CMakeCXXInformation.cmake C$:/msys64/mingw64/share/cmake/Modules/CMakeCommonLanguageInclude.cmake C$:/msys64/mingw64/share/cmake/Modules/CMakeGenericSystem.cmake C$:/msys64/mingw64/share/cmake/Modules/CMakeInitializeConfigs.cmake C$:/msys64/mingw64/share/cmake/Modules/CMakeLanguageInformation.cmake C$:/msys64/mingw64/share/cmake/Modules/CMakeRCInformation.cmake C$:/msys64/mingw64/share/cmake/Modules/CMakeSystemSpecificInformation.cmake C$:/msys64/mingw64/share/cmake/Modules/CMakeSystemSpecificInitialize.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/CMakeCommonCompilerMacros.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/GNU-CXX.cmake C$:/msys64/mingw64/share/cmake/Modules/Compiler/GNU.cmake C$:/msys64/mingw64/share/cmake/Modules/Internal/CMakeCXXLinkerInformation.cmake C$:/msys64/mingw64/share/cmake/Modules/Internal/CMakeCommonLinkerInformation.cmake C$:/msys64/mingw64/share/cmake/Modules/Linker/GNU-CXX.cmake C$:/msys64/mingw64/share/cmake/Modules/Linker/GNU.cmake C$:/msys64/mingw64/share/cmake/Modules/Platform/Linker/GNU.cmake C$:/msys64/mingw64/share/cmake/Modules/Platform/Linker/Windows-GNU-CXX.cmake C$:/msys64/mingw64/share/cmake/Modules/Platform/Linker/Windows-GNU.cmake C$:/msys64/mingw64/share/cmake/Modules/Platform/Windows-GNU-CXX-ABI.cmake C$:/msys64/mingw64/share/cmake/Modules/Platform/Windows-GNU-CXX.cmake C$:/msys64/mingw64/share/cmake/Modules/Platform/Windows-GNU.cmake C$:/msys64/mingw64/share/cmake/Modules/Platform/Windows-Initialize.cmake C$:/msys64/mingw64/share/cmake/Modules/Platform/Windows-windres.cmake C$:/msys64/mingw64/share/cmake/Modules/Platform/Windows.cmake C$:/msys64/mingw64/share/cmake/Modules/Platform/WindowsPaths.cmake C$:/msys64/ucrt64/lib/cmake/SFML/SFMLConfig.cmake C$:/msys64/ucrt64/lib/cmake/SFML/SFMLConfigDependencies.cmake C$:/msys64/ucrt64/lib/cmake/SFML/SFMLConfigVersion.cmake C$:/msys64/ucrt64/lib/cmake/SFML/SFMLSharedTargets-release.cmake C$:/msys64/ucrt64/lib/cmake/SFML/SFMLSharedTargets.cmake CMakeCache.txt CMakeFiles/3.31.1/CMakeCXXCompiler.cmake CMakeFiles/3.31.1/CMakeRCCompiler.cmake CMakeFiles/3.31.1/CMakeSystem.cmake: phony
 
 
 #############################################

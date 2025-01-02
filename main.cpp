@@ -1,28 +1,15 @@
-#include "jeu_petits_chevaux.hpp"
-#include "ecran_titre.cpp"
+#include <SFML/Graphics.hpp>
+#include "menu.hpp"
+#include "jeu.hpp"
 
 int main() {
-    JeuPetitsChevaux jeu;
-    afficherEcranTitre(jeu);
+    // Créer et afficher le menu
+    Menu menu;
+    menu.run();
 
-    while (!jeu.estTermine()) {
-        std::cout << "1. Lancer le dé\n";
-        std::cout << "2. Quitter\n";
-        int choix;
-        std::cin >> choix;
-
-        switch (choix) {
-            case 1:
-                jeu.lancerDe();
-                jeu.afficherPositions();
-                break;
-            case 2:
-                return 0;
-            default:
-                std::cout << "Choix invalide.\n";
-                break;
-        }
-    }
+    // Après la fermeture du menu, démarrer le jeu
+    Jeu jeu;
+    jeu.run();
 
     return 0;
 }

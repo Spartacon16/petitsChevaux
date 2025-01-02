@@ -1,26 +1,26 @@
 [
 {
   "directory": "C:/Users/SimonBressot/OneDrive - bizofficeonecorp/Documents/Polytech Nice/petitsChevaux/build",
-  "command": "C:\\msys64\\ucrt64\\bin\\c++.exe -I\"C:/Users/SimonBressot/OneDrive - bizofficeonecorp/Documents/Polytech Nice/petitsChevaux\" -g -o CMakeFiles\\petitsChevaux.dir\\jeu_petits_chevaux.cpp.obj -c \"C:\\Users\\SimonBressot\\OneDrive - bizofficeonecorp\\Documents\\Polytech Nice\\petitsChevaux\\jeu_petits_chevaux.cpp\"",
-  "file": "C:\\Users\\SimonBressot\\OneDrive - bizofficeonecorp\\Documents\\Polytech Nice\\petitsChevaux\\jeu_petits_chevaux.cpp",
-  "output": "CMakeFiles\\petitsChevaux.dir\\jeu_petits_chevaux.cpp.obj"
-},
-{
-  "directory": "C:/Users/SimonBressot/OneDrive - bizofficeonecorp/Documents/Polytech Nice/petitsChevaux/build",
-  "command": "C:\\msys64\\ucrt64\\bin\\c++.exe -I\"C:/Users/SimonBressot/OneDrive - bizofficeonecorp/Documents/Polytech Nice/petitsChevaux\" -g -o CMakeFiles\\petitsChevaux.dir\\joueur_humain.cpp.obj -c \"C:\\Users\\SimonBressot\\OneDrive - bizofficeonecorp\\Documents\\Polytech Nice\\petitsChevaux\\joueur_humain.cpp\"",
-  "file": "C:\\Users\\SimonBressot\\OneDrive - bizofficeonecorp\\Documents\\Polytech Nice\\petitsChevaux\\joueur_humain.cpp",
-  "output": "CMakeFiles\\petitsChevaux.dir\\joueur_humain.cpp.obj"
-},
-{
-  "directory": "C:/Users/SimonBressot/OneDrive - bizofficeonecorp/Documents/Polytech Nice/petitsChevaux/build",
-  "command": "C:\\msys64\\ucrt64\\bin\\c++.exe -I\"C:/Users/SimonBressot/OneDrive - bizofficeonecorp/Documents/Polytech Nice/petitsChevaux\" -g -o CMakeFiles\\petitsChevaux.dir\\joueur_ia.cpp.obj -c \"C:\\Users\\SimonBressot\\OneDrive - bizofficeonecorp\\Documents\\Polytech Nice\\petitsChevaux\\joueur_ia.cpp\"",
-  "file": "C:\\Users\\SimonBressot\\OneDrive - bizofficeonecorp\\Documents\\Polytech Nice\\petitsChevaux\\joueur_ia.cpp",
-  "output": "CMakeFiles\\petitsChevaux.dir\\joueur_ia.cpp.obj"
-},
-{
-  "directory": "C:/Users/SimonBressot/OneDrive - bizofficeonecorp/Documents/Polytech Nice/petitsChevaux/build",
-  "command": "C:\\msys64\\ucrt64\\bin\\c++.exe -I\"C:/Users/SimonBressot/OneDrive - bizofficeonecorp/Documents/Polytech Nice/petitsChevaux\" -g -o CMakeFiles\\JEU.dir\\main.cpp.obj -c \"C:\\Users\\SimonBressot\\OneDrive - bizofficeonecorp\\Documents\\Polytech Nice\\petitsChevaux\\main.cpp\"",
+  "command": "C:\\msys64\\ucrt64\\bin\\c++.exe -g -std=gnu++17 -o CMakeFiles\\petitsChevaux.dir\\main.cpp.obj -c \"C:\\Users\\SimonBressot\\OneDrive - bizofficeonecorp\\Documents\\Polytech Nice\\petitsChevaux\\main.cpp\"",
   "file": "C:\\Users\\SimonBressot\\OneDrive - bizofficeonecorp\\Documents\\Polytech Nice\\petitsChevaux\\main.cpp",
-  "output": "CMakeFiles\\JEU.dir\\main.cpp.obj"
+  "output": "CMakeFiles\\petitsChevaux.dir\\main.cpp.obj"
+},
+{
+  "directory": "C:/Users/SimonBressot/OneDrive - bizofficeonecorp/Documents/Polytech Nice/petitsChevaux/build",
+  "command": "C:\\msys64\\ucrt64\\bin\\c++.exe -g -std=gnu++17 -o CMakeFiles\\petitsChevaux.dir\\menu.cpp.obj -c \"C:\\Users\\SimonBressot\\OneDrive - bizofficeonecorp\\Documents\\Polytech Nice\\petitsChevaux\\menu.cpp\"",
+  "file": "C:\\Users\\SimonBressot\\OneDrive - bizofficeonecorp\\Documents\\Polytech Nice\\petitsChevaux\\menu.cpp",
+  "output": "CMakeFiles\\petitsChevaux.dir\\menu.cpp.obj"
+},
+{
+  "directory": "C:/Users/SimonBressot/OneDrive - bizofficeonecorp/Documents/Polytech Nice/petitsChevaux/build",
+  "command": "C:\\msys64\\ucrt64\\bin\\c++.exe -g -std=gnu++17 -o CMakeFiles\\petitsChevaux.dir\\jeu.cpp.obj -c \"C:\\Users\\SimonBressot\\OneDrive - bizofficeonecorp\\Documents\\Polytech Nice\\petitsChevaux\\jeu.cpp\"",
+  "file": "C:\\Users\\SimonBressot\\OneDrive - bizofficeonecorp\\Documents\\Polytech Nice\\petitsChevaux\\jeu.cpp",
+  "output": "CMakeFiles\\petitsChevaux.dir\\jeu.cpp.obj"
+},
+{
+  "directory": "C:/Users/SimonBressot/OneDrive - bizofficeonecorp/Documents/Polytech Nice/petitsChevaux/build",
+  "command": "C:\\msys64\\ucrt64\\bin\\c++.exe -g -std=gnu++17 -o CMakeFiles\\petitsChevaux.dir\\graphique.cpp.obj -c \"C:\\Users\\SimonBressot\\OneDrive - bizofficeonecorp\\Documents\\Polytech Nice\\petitsChevaux\\graphique.cpp\"",
+  "file": "C:\\Users\\SimonBressot\\OneDrive - bizofficeonecorp\\Documents\\Polytech Nice\\petitsChevaux\\graphique.cpp",
+  "output": "CMakeFiles\\petitsChevaux.dir\\graphique.cpp.obj"
 }
 ]

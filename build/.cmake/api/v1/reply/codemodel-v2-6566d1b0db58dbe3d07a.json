@@ -9,14 +9,13 @@
 					"jsonFile" : "directory-.-Debug-d0094a50bb2071803777.json",
 					"minimumCMakeVersion" : 
 					{
-						"string" : "3.30"
+						"string" : "3.31.1"
 					},
 					"projectIndex" : 0,
 					"source" : ".",
 					"targetIndexes" : 
 					[
-						0,
-						1
+						0
 					]
 				}
 			],
@@ -31,8 +30,7 @@
 					"name" : "petitsChevaux",
 					"targetIndexes" : 
 					[
-						0,
-						1
+						0
 					]
 				}
 			],
@@ -40,15 +38,8 @@
 			[
 				{
 					"directoryIndex" : 0,
-					"id" : "JEU::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-JEU-Debug-cfd5b29a168322ffcdea.json",
-					"name" : "JEU",
-					"projectIndex" : 0
-				},
-				{
-					"directoryIndex" : 0,
 					"id" : "petitsChevaux::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-petitsChevaux-Debug-a2823bec86649d93840e.json",
+					"jsonFile" : "target-petitsChevaux-Debug-c5430ae03c81fce9b896.json",
 					"name" : "petitsChevaux",
 					"projectIndex" : 0
 				}

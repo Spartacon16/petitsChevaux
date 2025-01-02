@@ -1,21 +1,16 @@
-cmake_minimum_required(VERSION 3.30)
+cmake_minimum_required(VERSION 3.31.1)
 
-project(petitsChevaux)
+# Nom du projet
+project(petitsChevaux LANGUAGES CXX)
 
+# C++ Standard
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Include directories
-include_directories(${CMAKE_SOURCE_DIR})
+find_package(SFML 2 COMPONENTS system window graphics REQUIRED)
 
-# Create the library
-add_library(petitsChevaux
-    jeu_petits_chevaux.cpp
-    joueur_humain.cpp
-    joueur_ia.cpp
-)
+# Fichiers source
+add_executable(${PROJECT_NAME} main.cpp menu.cpp jeu.cpp graphique.cpp)
 
-# Create the executable
-add_executable(JEU main.cpp)
-
-# Link the library to the executable
-target_link_libraries(JEU petitsChevaux)
+# Lier SFML
+target_link_libraries(${PROJECT_NAME} sfml-system sfml-window sfml-graphics)
