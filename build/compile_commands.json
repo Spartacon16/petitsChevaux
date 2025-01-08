@@ -22,5 +22,11 @@
   "command": "C:\\msys64\\ucrt64\\bin\\c++.exe -g -std=gnu++17 -o CMakeFiles\\petitsChevaux.dir\\graphique.cpp.obj -c \"C:\\Users\\SimonBressot\\OneDrive - bizofficeonecorp\\Documents\\Polytech Nice\\petitsChevaux\\graphique.cpp\"",
   "file": "C:\\Users\\SimonBressot\\OneDrive - bizofficeonecorp\\Documents\\Polytech Nice\\petitsChevaux\\graphique.cpp",
   "output": "CMakeFiles\\petitsChevaux.dir\\graphique.cpp.obj"
+},
+{
+  "directory": "C:/Users/SimonBressot/OneDrive - bizofficeonecorp/Documents/Polytech Nice/petitsChevaux/build",
+  "command": "C:\\msys64\\ucrt64\\bin\\c++.exe -g -std=gnu++17 -o CMakeFiles\\petitsChevaux.dir\\music.cpp.obj -c \"C:\\Users\\SimonBressot\\OneDrive - bizofficeonecorp\\Documents\\Polytech Nice\\petitsChevaux\\music.cpp\"",
+  "file": "C:\\Users\\SimonBressot\\OneDrive - bizofficeonecorp\\Documents\\Polytech Nice\\petitsChevaux\\music.cpp",
+  "output": "CMakeFiles\\petitsChevaux.dir\\music.cpp.obj"
 }
 ]
