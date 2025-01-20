@@ -1,110 +1,139 @@
 #include "jeu.hpp"
-#include "menu.hpp"
-#include <vector>
-// --- Pion ---
-Pion::Pion(Couleur couleur, sf::Vector2f position)
-    : couleur(couleur), position(position) {
-    cercle.setRadius(15);
-    cercle.setOrigin(15, 15);  // Centrer le cercle
-    cercle.setPosition(position);
+#include <iostream>
 
-    switch (couleur) {
-        case Couleur::Rouge: cercle.setFillColor(sf::Color::Red); break;
-        case Couleur::Vert: cercle.setFillColor(sf::Color::Green); break;
-        case Couleur::Bleu: cercle.setFillColor(sf::Color::Blue); break;
-        case Couleur::Jaune: cercle.setFillColor(sf::Color::Yellow); break;
+// Constructeur
+Jeu::Jeu(sf::RenderWindow& window)
+: window(window), isRunning(false) {
+    // Charger la texture du plateau
+    if (!plateauTexture.loadFromFile("../table_jeu.png")) {
+        std::cerr << "Erreur : Impossible de charger table_jeu.png\n";
     }
+    plateauSprite.setTexture(plateauTexture);
+
+    // Redimensionner le plateau à 600x600
+    sf::Vector2u texSize = plateauTexture.getSize(); // Taille originale (par ex. 225×225)
+    float scaleX = 600.f / texSize.x;
+    float scaleY = 600.f / texSize.y;
+    plateauSprite.setScale(scaleX, scaleY);
+
+    // Charger la texture des pions
+    if (!pionTexture.loadFromFile("../Pion.png")) {
+        std::cerr << "Erreur : Impossible de charger Pion.png\n";
+    }
+
+    // Taille d'un carreau
+    const float carreauPx = 50.f;
+
+    // Calcul de l'échelle pour ajuster le pion à un carreau
+    pionScale = carreauPx / 800.f; // 800 px correspond à la taille de l'image Pion.png
+
+    // Positions de départ pour chaque joueur (zones de départ, en carré)
+    startingPositions = {
+        { 100.f, 100.f }, // Haut gauche : Jaune (J1)
+        { 450.f, 450.f }, // Bas droit : Rouge (J2)
+        { 100.f, 450.f }, // Bas gauche : Vert (J3)
+        { 450.f, 100.f }  // Haut droit : Bleu (J4)
+    };
+
+    // Couleurs pastel des joueurs
+    playerColors = {
+        sf::Color(255, 255, 153),   // Jaune pastel (J1)
+        sf::Color(255, 102, 102),   // Rouge pastel (J2)
+        sf::Color(102, 255, 102),   // Vert pastel (J3)
+        sf::Color(102, 178, 255)    // Bleu pastel (J4)
+    };
 }
 
-void Pion::afficher(sf::RenderWindow& window) {
-    window.draw(cercle);
-}
+// Configurer les joueurs et leurs pions
+void Jeu::setPlayers(const std::vector<PlayerInfo>& playersSelected) {
+    playersInGame = playersSelected;
+    playerPions.clear(); // Réinitialiser les pions pour chaque joueur
 
-void Pion::setPosition(sf::Vector2f newPosition) {
-    position = newPosition;
-    cercle.setPosition(newPosition);
-}
+    for (size_t i = 0; i < playersInGame.size(); ++i) {
+        std::vector<PionInfo> pionsJoueur; // Les 4 pions du joueur
 
-// --- Plateau ---
-Plateau::Plateau(int largeur, int hauteur) : largeur(largeur), hauteur(hauteur) {
-    caseSize = 50; // Taille d'une case
-    pions.resize(largeur * hauteur); // 1D pour simplifier
-}
+        for (int j = 0; j < 4; ++j) { // Chaque joueur a 4 pions
+            PionInfo pion;
+            pion.sprite.setTexture(pionTexture);
 
-void Plateau::ajouterPion(int x, int y, Pion pion) {
-    int index = y * largeur + x;
-    pions[index].push_back(pion);
-}
+            // Centrer le sprite : le pion fait 800×800 => origine = (400,400)
+            pion.sprite.setOrigin(400.f, 400.f);
 
-void Plateau::afficher(sf::RenderWindow& window) {
-    // Dessiner les cases
-    for (int y = 0; y < hauteur; ++y) {
-        for (int x = 0; x < largeur; ++x) {
-            sf::RectangleShape caseRect(sf::Vector2f(caseSize, caseSize));
-            caseRect.setPosition(x * caseSize, y * caseSize);
-            caseRect.setFillColor(sf::Color(200, 200, 200));
-            window.draw(caseRect);
+            // Appliquer l'échelle pour ajuster la taille
+            pion.sprite.setScale(pionScale, pionScale);
 
-            // Affichage des pions sur chaque case
-            int index = y * largeur + x;
-            for (auto& pion : pions[index]) {
-                pion.afficher(window);
-            }
+            // Appliquer la couleur pastel du joueur
+            pion.sprite.setColor(playerColors[i]);
+
+            // Positionner chaque pion dans une zone de départ
+            pion.startPosition = {
+                startingPositions[i].x + (j % 2) * 50.f, // Décalage horizontal
+                startingPositions[i].y + (j / 2) * 50.f  // Décalage vertical
+            };
+            pion.sprite.setPosition(pion.startPosition);
+
+            pionsJoueur.push_back(pion);
         }
+
+        playerPions.push_back(pionsJoueur); // Ajouter les pions du joueur
     }
 }
 
-
-Jeu::Jeu(sf::RenderWindow& window): window(window),plateau(800, 600){
-    Plateau plateau(10, 10);
-
-    // Initialisation des pions et des positions de départ
-    pions.push_back(Pion(Pion::Couleur::Rouge, sf::Vector2f(25, 25)));
-    pions.push_back(Pion(Pion::Couleur::Vert, sf::Vector2f(35, 25)));
-    pions.push_back(Pion(Pion::Couleur::Bleu, sf::Vector2f(75, 75)));
-    pions.push_back(Pion(Pion::Couleur::Jaune, sf::Vector2f(85, 75)));
-
-    // Ajout des pions au plateau
-    plateau.ajouterPion(0, 0, pions[0]);
-    plateau.ajouterPion(0, 0, pions[1]);
-    plateau.ajouterPion(1, 1, pions[2]);
-    plateau.ajouterPion(1, 1, pions[3]);
+// Obtenir l'échelle des pions
+float Jeu::getPionScale() const {
+    return pionScale;
 }
 
+// Obtenir les couleurs des joueurs
+const std::vector<sf::Color>& Jeu::getPlayerColors() const {
+    return playerColors;
+}
+
+// Lancer la boucle du jeu
 void Jeu::run(sf::RenderWindow& window) {
-    while (isRunning) {
+    isRunning = true;
+
+    while (window.isOpen() && isRunning) {
         handleEvents(window);
         update();
         render(window);
     }
 }
 
+// Gestion des événements
 void Jeu::handleEvents(sf::RenderWindow& window) {
     sf::Event event;
     while (window.pollEvent(event)) {
         if (event.type == sf::Event::Closed) {
-            isRunning = false;
+            window.close();
         }
-
-        // Ajouter ici d'autres événements comme les clics ou les touches pour déplacer les pions
     }
 }
 
+// Mettre à jour la logique du jeu (placeholder pour futur ajout)
 void Jeu::update() {
-    // Logique de mise à jour du jeu, par exemple pour gérer les déplacements des pions
-    // Vous pouvez ajouter la gestion des déplacements, des tours, etc.
+    // Ici, ajoutez les règles du jeu ou la logique de déplacement
 }
 
+// Rendu graphique
 void Jeu::render(sf::RenderWindow& window) {
-    window.clear(sf::Color::White);
-    
-    // Affichage du plateau
-    plateau.afficher(window);
+    window.clear();
 
-    // Affichage des pions
-    for (auto& pion : pions) {
-        pion.afficher(window);
+    // Dessiner le plateau
+    window.draw(plateauSprite);
+
+    // Dessiner les pions
+    for (const auto& pionsJoueur : playerPions) {
+        for (const auto& pion : pionsJoueur) {
+            window.draw(pion.sprite);
+        }
     }
 
     window.display();
+}
+
+// Obtenir la position d'une case (placeholder pour futur ajout)
+sf::Vector2f Jeu::getCasePosition(int caseIndex, int playerStartIndex) {
+    // À implémenter pour déplacer les pions sur le plateau
+    return sf::Vector2f(0, 0);
 }
