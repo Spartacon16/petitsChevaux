@@ -10,7 +10,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(SFML 2 COMPONENTS system window graphics REQUIRED)
 
 # Fichiers source
-add_executable(${PROJECT_NAME} main.cpp menu.cpp jeu.cpp graphique.cpp music.cpp)
+add_executable(${PROJECT_NAME} main.cpp menu.cpp jeu.cpp music.cpp)
 
 # Lier SFML
 target_link_libraries(${PROJECT_NAME} sfml-system sfml-window sfml-graphics sfml-audio)

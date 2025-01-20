@@ -104,117 +104,113 @@ void Menu::handleEvents(sf::RenderWindow& window) {
         if (event.type == sf::Event::Closed)
             window.close();
 
-        if (event.type == sf::Event::MouseButtonPressed) {
-            sf::Vector2i mousePos = sf::Mouse::getPosition(window);
-
-            // Gérer les clics sur les boutons
-            if (playAloneButton.getGlobalBounds().contains(static_cast<sf::Vector2f>(mousePos))) {
-                clickSound.play();
-                switchToPlayerSelection();
-                isPlayerComputer = true;
-            }
-            else if (playWithOthersButton.getGlobalBounds().contains(static_cast<sf::Vector2f>(mousePos))) {
-                clickSound.play();
-                switchToPlayerSelection();
-                isPlayerComputer = false;
-            }
-            else if (quitButton.getGlobalBounds().contains(static_cast<sf::Vector2f>(mousePos))) {
-                clickSound.play();
-                while (clickSound.getStatus() == sf::Sound::Playing) {
-                    sf::sleep(sf::milliseconds(100));
-                }
-                window.close();
-            }
+        if (event.type == sf::Event::Resized) {
+            handleResize(event.size.width, event.size.height);
         }
 
-        if (event.type == sf::Event::Resized) {
-            backgroundSprite.setOrigin(0, 0); // Set origin to top-left corner
-            backgroundSprite.setScale(
-                static_cast<float>(event.size.width) / backgroundTexture.getSize().x,
-                static_cast<float>(event.size.height) / backgroundTexture.getSize().y
-            );
-
-            const sf::Vector2f buttonSize(200, 50);
-            const float rightMargin = 70;
-            const float buttonSpacing = 20;
-
-            playAloneButton.setSize(buttonSize);
-            playAloneButton.setPosition(window.getSize().x - buttonSize.x - rightMargin, 150);
-
-            playAloneText.setCharacterSize(26);
-            playAloneText.setOrigin(playAloneText.getLocalBounds().width / 2.0f, playAloneText.getLocalBounds().height / 2.0f);
-            playAloneText.setPosition(playAloneButton.getPosition().x + buttonSize.x / 2, playAloneButton.getPosition().y + buttonSize.y / 2);
-
-            neonTextPlayAlone.setPosition(playAloneButton.getPosition().x + 18, playAloneButton.getPosition().y + 8);
-
-            playWithOthersButton.setSize(buttonSize);
-            playWithOthersButton.setPosition(playAloneButton.getPosition().x, playAloneButton.getPosition().y + buttonSize.y + buttonSpacing);
-
-            playWithOthersText.setOrigin(playWithOthersText.getLocalBounds().width / 2.0f, playWithOthersText.getLocalBounds().height / 2.0f);
-            playWithOthersText.setPosition(playWithOthersButton.getPosition().x + buttonSize.x / 2, playWithOthersButton.getPosition().y + buttonSize.y / 2);
-
-            neonTextPlayWithOthers.setPosition(playWithOthersButton.getPosition().x + 18, playWithOthersButton.getPosition().y + 8);
-
-            quitButton.setSize(buttonSize);
-            quitButton.setPosition(playWithOthersButton.getPosition().x, playWithOthersButton.getPosition().y + buttonSize.y + buttonSpacing);
-
-            quitText.setOrigin(quitText.getLocalBounds().width / 2.0f, quitText.getLocalBounds().height / 2.0f);
-            quitText.setPosition(quitButton.getPosition().x + buttonSize.x / 2, quitButton.getPosition().y + buttonSize.y / 2);
-
-            neonTextQuit.setPosition(quitButton.getPosition().x + 18, quitButton.getPosition().y + 8);
+        if (currentState == MAIN_MENU) {
+            handleMainMenuEvents(event, window);
+        } else if (currentState == PLAYER_SELECTION) {
+            handlePlayerSelectionEvents(event, window);
         }
     }
 }
 
+void Menu::handleMainMenuEvents(sf::Event& event, sf::RenderWindow& window) {
+    if (event.type == sf::Event::MouseButtonPressed) {
+        sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+        if (playAloneButton.getGlobalBounds().contains(static_cast<sf::Vector2f>(mousePos))) {
+            clickSound.play();
+            currentState = PLAYER_SELECTION;
+            isPlayerComputer = true;
+        } else if (playWithOthersButton.getGlobalBounds().contains(static_cast<sf::Vector2f>(mousePos))) {
+            clickSound.play();
+            currentState = PLAYER_SELECTION;
+            isPlayerComputer = false;
+        } else if (quitButton.getGlobalBounds().contains(static_cast<sf::Vector2f>(mousePos))) {
+            clickSound.play();
+            while (clickSound.getStatus() == sf::Sound::Playing) {
+                sf::sleep(sf::milliseconds(100));
+            }
+            window.close();
+        }
+    }
+}
+
+void Menu::handlePlayerSelectionEvents(sf::Event& event, sf::RenderWindow& window) {
+    // Gestion des événements pour le menu de sélection des joueurs
+    if (event.type == sf::Event::MouseButtonPressed) {
+        // Exemple : revenir au menu principal
+        currentState = MAIN_MENU;
+    }
+}
+
+void Menu::handleResize(unsigned int newWidth, unsigned int newHeight) {
+    sf::FloatRect visibleArea(0, 0, static_cast<float>(newWidth), static_cast<float>(newHeight));
+    window.setView(sf::View(visibleArea));
+
+    backgroundSprite.setScale(
+        static_cast<float>(newWidth) / backgroundTexture.getSize().x,
+        static_cast<float>(newHeight) / backgroundTexture.getSize().y
+    );
+
+    if (currentState == MAIN_MENU) {
+        const sf::Vector2f buttonSize(200, 50);
+        const float rightMargin = 70;
+        const float buttonSpacing = 20;
+
+        playAloneButton.setPosition(newWidth - buttonSize.x - rightMargin, 150);
+        playAloneText.setPosition(playAloneButton.getPosition().x + 20, playAloneButton.getPosition().y + 10);
+        neonTextPlayAlone.setPosition(playAloneButton.getPosition().x + 18, playAloneButton.getPosition().y + 8);
+
+        playWithOthersButton.setPosition(playAloneButton.getPosition().x, playAloneButton.getPosition().y + buttonSize.y + buttonSpacing);
+        playWithOthersText.setPosition(playWithOthersButton.getPosition().x + 20, playWithOthersButton.getPosition().y + 10);
+        neonTextPlayWithOthers.setPosition(playWithOthersButton.getPosition().x + 18, playWithOthersButton.getPosition().y + 8);
+
+        quitButton.setPosition(playWithOthersButton.getPosition().x, playWithOthersButton.getPosition().y + buttonSize.y + buttonSpacing);
+        quitText.setPosition(quitButton.getPosition().x + 20, quitButton.getPosition().y + 10);
+        neonTextQuit.setPosition(quitButton.getPosition().x + 18, quitButton.getPosition().y + 8);
+    } else if (currentState == PLAYER_SELECTION) {
+        // Implement resizing logic if needed
+    }
+}
 
 
 void Menu::render(sf::RenderWindow& window) {
     window.clear(sf::Color::White);
     window.draw(backgroundSprite);
 
-    sf::Vector2i mousePos = sf::Mouse::getPosition(window);
-    sf::Vector2f mousePosF(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y));
-
-    // Effet néon
-    neonTextPlayAlone.setFillColor(playAloneButton.getGlobalBounds().contains(mousePosF) ? sf::Color(0, 146, 50) : sf::Color::Transparent);
-    neonTextPlayWithOthers.setFillColor(playWithOthersButton.getGlobalBounds().contains(mousePosF) ? sf::Color(0, 50, 174) : sf::Color::Transparent);
-    neonTextQuit.setFillColor(quitButton.getGlobalBounds().contains(mousePosF) ? sf::Color(255, 0, 0) : sf::Color::Transparent);
-
-    drawButton(window, playAloneButton, playAloneText, neonTextPlayAlone);
-    drawButton(window, playWithOthersButton, playWithOthersText, neonTextPlayWithOthers);
-    drawButton(window, quitButton, quitText, neonTextQuit);
+    if (currentState == MAIN_MENU) {
+        renderMainMenu(window);
+    } else if (currentState == PLAYER_SELECTION) {
+        renderPlayerSelection(window);
+    }
 
     window.display();
 }
 
+void Menu::renderMainMenu(sf::RenderWindow& window) {
+    sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+    sf::Vector2f mousePosF(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y));
 
-void Menu::drawButton(sf::RenderWindow& window, const sf::RectangleShape& button, sf::Text& text, sf::Text& neonText) {
+    neonTextPlayAlone.setFillColor(playAloneButton.getGlobalBounds().contains(mousePosF) ? sf::Color(0, 146, 50) : sf::Color::Transparent);
+    neonTextPlayWithOthers.setFillColor(playWithOthersButton.getGlobalBounds().contains(mousePosF) ? sf::Color(0, 50, 174) : sf::Color::Transparent);
+    neonTextQuit.setFillColor(quitButton.getGlobalBounds().contains(mousePosF) ? sf::Color(255, 0, 0) : sf::Color::Transparent);
+
+    drawButtonMenu(window, playAloneButton, playAloneText, neonTextPlayAlone);
+    drawButtonMenu(window, playWithOthersButton, playWithOthersText, neonTextPlayWithOthers);
+    drawButtonMenu(window, quitButton, quitText, neonTextQuit);
+}
+
+void Menu::renderPlayerSelection(sf::RenderWindow& window) {
+    for (size_t i = 0; i < playerButtons.size(); ++i) {
+        window.draw(playerButtons[i]);
+        window.draw(playerNames[i]);
+    }
+}
+
+void Menu::drawButtonMenu(sf::RenderWindow& window, const sf::RectangleShape& button, sf::Text& text, sf::Text& neonText) {
     window.draw(neonText);
     window.draw(button);
     window.draw(text);
-}
-
-
-
-void Menu::switchToPlayerSelection() {
-    isPlayerSelectionActive = true;
-    playerButtons.clear(); // Nettoyer les anciens boutons de joueur
-    playerNames.clear(); // Nettoyer les noms des joueurs
-
-    // Exemple de configuration des boutons des joueurs
-    for (int i = 0; i < maxPlayers; ++i) {
-        sf::RectangleShape button(sf::Vector2f(200, 50));
-        button.setPosition(100.f, 200.f + i * 60.f);  // Positionner les boutons
-        button.setFillColor(sf::Color::Transparent);
-
-        sf::Text playerName;
-        playerName.setFont(font);
-        playerName.setCharacterSize(24);
-        playerName.setStyle(sf::Text::Bold);
-        playerName.setFillColor(sf::Color::White);
-        playerName.setPosition(button.getPosition().x + 20, button.getPosition().y + 10);
-
-        playerButtons.push_back(button);
-        playerNames.push_back(playerName);
-    }
 }

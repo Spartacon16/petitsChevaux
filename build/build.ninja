@@ -67,12 +67,6 @@ build CMakeFiles/petitsChevaux.dir/jeu.cpp.obj: CXX_COMPILER__petitsChevaux_unsc
   OBJECT_DIR = CMakeFiles\petitsChevaux.dir
   OBJECT_FILE_DIR = CMakeFiles\petitsChevaux.dir
 
-build CMakeFiles/petitsChevaux.dir/graphique.cpp.obj: CXX_COMPILER__petitsChevaux_unscanned_Debug C$:/Users/SimonBressot/OneDrive$ -$ bizofficeonecorp/Documents/Polytech$ Nice/petitsChevaux/graphique.cpp || cmake_object_order_depends_target_petitsChevaux
-  DEP_FILE = CMakeFiles\petitsChevaux.dir\graphique.cpp.obj.d
-  FLAGS = -g -std=gnu++17
-  OBJECT_DIR = CMakeFiles\petitsChevaux.dir
-  OBJECT_FILE_DIR = CMakeFiles\petitsChevaux.dir
-
 build CMakeFiles/petitsChevaux.dir/music.cpp.obj: CXX_COMPILER__petitsChevaux_unscanned_Debug C$:/Users/SimonBressot/OneDrive$ -$ bizofficeonecorp/Documents/Polytech$ Nice/petitsChevaux/music.cpp || cmake_object_order_depends_target_petitsChevaux
   DEP_FILE = CMakeFiles\petitsChevaux.dir\music.cpp.obj.d
   FLAGS = -g -std=gnu++17
@@ -87,7 +81,7 @@ build CMakeFiles/petitsChevaux.dir/music.cpp.obj: CXX_COMPILER__petitsChevaux_un
 #############################################
 # Link the executable petitsChevaux.exe
 
-build petitsChevaux.exe: CXX_EXECUTABLE_LINKER__petitsChevaux_Debug CMakeFiles/petitsChevaux.dir/main.cpp.obj CMakeFiles/petitsChevaux.dir/menu.cpp.obj CMakeFiles/petitsChevaux.dir/jeu.cpp.obj CMakeFiles/petitsChevaux.dir/graphique.cpp.obj CMakeFiles/petitsChevaux.dir/music.cpp.obj | C$:/msys64/ucrt64/lib/libsfml-graphics.dll.a C$:/msys64/ucrt64/lib/libsfml-audio.dll.a C$:/msys64/ucrt64/lib/libsfml-window.dll.a C$:/msys64/ucrt64/lib/libsfml-system.dll.a
+build petitsChevaux.exe: CXX_EXECUTABLE_LINKER__petitsChevaux_Debug CMakeFiles/petitsChevaux.dir/main.cpp.obj CMakeFiles/petitsChevaux.dir/menu.cpp.obj CMakeFiles/petitsChevaux.dir/jeu.cpp.obj CMakeFiles/petitsChevaux.dir/music.cpp.obj | C$:/msys64/ucrt64/lib/libsfml-graphics.dll.a C$:/msys64/ucrt64/lib/libsfml-audio.dll.a C$:/msys64/ucrt64/lib/libsfml-window.dll.a C$:/msys64/ucrt64/lib/libsfml-system.dll.a
   FLAGS = -g
   LINK_LIBRARIES = C:/msys64/ucrt64/lib/libsfml-graphics.dll.a  C:/msys64/ucrt64/lib/libsfml-audio.dll.a  C:/msys64/ucrt64/lib/libsfml-window.dll.a  C:/msys64/ucrt64/lib/libsfml-system.dll.a  -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
   OBJECT_DIR = CMakeFiles\petitsChevaux.dir
