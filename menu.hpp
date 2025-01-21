@@ -39,6 +39,10 @@ public:
     // Permettra au Jeu de savoir qui a été sélectionné
     const std::vector<PlayerInfo>& getPlayers() const { return players; }
 
+    // Ressources graphiques
+    sf::Font     font;
+    sf::Texture  backgroundTexture;
+    sf::Sprite   backgroundSprite;
 private:
     // Fonctions internes
     void loadSound(const std::string& soundPath);
@@ -66,10 +70,6 @@ private:
     // État courant (MAIN_MENU, PLAYER_SELECTION, GAME_RUNNING)
     MenuState currentState;
 
-    // Ressources graphiques
-    sf::Font     font;
-    sf::Texture  backgroundTexture;
-    sf::Sprite   backgroundSprite;
 
     // Boutons du Main Menu
     sf::RectangleShape playAloneButton, playWithOthersButton, quitButton;

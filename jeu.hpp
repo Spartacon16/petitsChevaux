@@ -11,9 +11,18 @@ struct PionInfo {
     sf::Vector2f startPosition; // Position de départ
 };
 
+struct Case {
+    sf::Vector2f position; // Position graphique en pixels
+    std::string type;      // Type de case : "Prison", "Parcours", "Finale", "Victoire"
+    int playerId;          // ID du joueur (0-3 pour 4 joueurs), -1 si neutre
+    int finalStep;         // Étape finale (1-6), 0 si non applicable
+
+    Case(sf::Vector2f pos, const std::string& t, int id = -1, int step = 0)
+        : position(pos), type(t), playerId(id), finalStep(step) {}
+};
 class Jeu {
 public:
-    Jeu(sf::RenderWindow& window);
+    Jeu(sf::RenderWindow& window,const sf::Font& font);
 
     // Définir les joueurs sélectionnés
     void setPlayers(const std::vector<PlayerInfo>& playersSelected);
@@ -25,6 +34,12 @@ public:
     float getPionScale() const;
     const std::vector<sf::Color>& getPlayerColors() const;
 
+    // Gestion du dé
+    void lancerDe();
+
+    // Passer au joueur suivant
+    void passerAuJoueurSuivant();
+
 private:
     // Gestion des événements
     void handleEvents(sf::RenderWindow& window);
@@ -35,13 +50,13 @@ private:
     // Rendu graphique
     void render(sf::RenderWindow& window);
 
-    // Configurer les pions pour chaque joueur
-    void setupPions();
-
+    // Configurer le plateau
+    void setupPlateau();
+    // Générer les cases de parcours
+    void generateParcours();
     // Obtenir la position d'une case (placeholder pour un déplacement futur)
     sf::Vector2f getCasePosition(int caseIndex, int playerStartIndex);
 
-private:
     sf::RenderWindow& window;
 
     // État du jeu
@@ -52,7 +67,14 @@ private:
 
     // Liste des pions par joueur
     std::vector<std::vector<PionInfo>> playerPions;
-
+    int joueurActuel; // Index du joueur actuel
+    // Variables pour gérer le dé
+    int valeurDe;
+    sf::RectangleShape boutonLancerDe;
+    sf::Text texteLancerDe;
+    sf::Text texteActions;
+    // Font pour le texte
+    sf::Font font;
     // Textures pour le plateau et les pions
     sf::Texture plateauTexture;
     sf::Sprite plateauSprite;
@@ -65,6 +87,8 @@ private:
     // Positions de départ pour chaque joueur
     std::vector<sf::Vector2f> startingPositions;
 
+    std::vector<Case> cases; // Liste de toutes les cases du plateau
+    std::map<int, std::vector<sf::Vector2f>> prisonPositions; // Pions de départ
     // Couleurs pastel des joueurs
     std::vector<sf::Color> playerColors;
 };

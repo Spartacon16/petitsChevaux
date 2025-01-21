@@ -1,9 +1,11 @@
 #include "jeu.hpp"
 #include <iostream>
+#include <cstdlib>
+#include <ctime>
 
 // Constructeur
-Jeu::Jeu(sf::RenderWindow& window)
-: window(window), isRunning(false) {
+Jeu::Jeu(sf::RenderWindow& window, const sf::Font& font)
+: window(window), font(font), isRunning(false),joueurActuel(0), valeurDe(0) {
     // Charger la texture du plateau
     if (!plateauTexture.loadFromFile("../table_jeu.png")) {
         std::cerr << "Erreur : Impossible de charger table_jeu.png\n";
@@ -42,6 +44,27 @@ Jeu::Jeu(sf::RenderWindow& window)
         sf::Color(102, 255, 102),   // Vert pastel (J3)
         sf::Color(102, 178, 255)    // Bleu pastel (J4)
     };
+    // Bouton "Lancer le dice"
+    boutonLancerDe.setSize(sf::Vector2f(150.f, 50.f));
+    boutonLancerDe.setPosition(610.f, 300.f); // À droite du plateau
+    boutonLancerDe.setFillColor(sf::Color::White);
+    boutonLancerDe.setOutlineThickness(2);
+    boutonLancerDe.setOutlineColor(sf::Color::Black);
+
+    // Texte sur le bouton
+    texteLancerDe.setFont(font);
+    texteLancerDe.setString("Lancer le dé");
+    texteLancerDe.setCharacterSize(20);
+    texteLancerDe.setFillColor(sf::Color::Black);
+    texteLancerDe.setPosition(boutonLancerDe.getPosition().x + 10, boutonLancerDe.getPosition().y + 10);
+
+    // Texte des actions
+    texteActions.setFont(font);
+    texteActions.setCharacterSize(20);
+    texteActions.setFillColor(sf::Color::Black);
+    texteActions.setPosition(610.f, 50.f);
+    texteActions.setString("Joueur: J1\n=> Lancez le de");
+
 }
 
 // Configurer les joueurs et leurs pions
@@ -107,6 +130,12 @@ void Jeu::handleEvents(sf::RenderWindow& window) {
         if (event.type == sf::Event::Closed) {
             window.close();
         }
+        if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) {
+            sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
+            if (boutonLancerDe.getGlobalBounds().contains(mousePos)) {
+                lancerDe();
+            }
+        }
     }
 }
 
@@ -129,11 +158,111 @@ void Jeu::render(sf::RenderWindow& window) {
         }
     }
 
+    // Dessiner le bouton et le texte
+    window.draw(boutonLancerDe);
+    window.draw(texteLancerDe);
+    window.draw(texteActions);
+
     window.display();
+    
 }
 
 // Obtenir la position d'une case (placeholder pour futur ajout)
 sf::Vector2f Jeu::getCasePosition(int caseIndex, int playerStartIndex) {
     // À implémenter pour déplacer les pions sur le plateau
     return sf::Vector2f(0, 0);
+}
+
+void Jeu::setupPlateau() {
+    // Charger la texture du plateau
+    if (!plateauTexture.loadFromFile("../table_jeu.png")) {
+        std::cerr << "Erreur : Impossible de charger la texture du plateau\n";
+        return;
+    }
+    plateauSprite.setTexture(plateauTexture);
+    plateauSprite.setScale(600.f / plateauTexture.getSize().x, 600.f / plateauTexture.getSize().y);
+
+    // Définir les cases du plateau
+    // Exemple d'une prison (coin haut gauche)
+    prisonPositions[0] = { {50, 50}, {100, 50}, {50, 100}, {100, 100} }; // Jaune
+    prisonPositions[1] = { {450, 50}, {500, 50}, {450, 100}, {500, 100} }; // Rouge
+    prisonPositions[2] = { {50, 450}, {100, 450}, {50, 500}, {100, 500} }; // Vert
+    prisonPositions[3] = { {450, 450}, {500, 450}, {450, 500}, {500, 500} }; // Bleu
+
+    // Ajout des cases de prison
+    for (int i = 0; i < 4; ++i) {
+        for (const auto& pos : prisonPositions[i]) {
+            cases.emplace_back(pos, "Prison", i);
+        }
+    }
+
+      // Générer les cases de parcours
+    generateParcours();
+
+
+    // Case de victoire au centre
+    cases.emplace_back(sf::Vector2f(300, 300), "Victoire");
+}
+
+void Jeu::generateParcours() {
+    const float delta = 14.f; // Delta de déplacement pour chaque case
+    sf::Vector2f startingPositions[4] = {
+        {16.5f, 98.5f},  // Jaune (départ)
+        {98.5f, 16.5f},  // Bleu (départ)
+        {500.5f, 98.5f}, // Rouge (départ)
+        {98.5f, 500.5f}  // Vert (départ)
+    };
+
+    for (int player = 0; player < 4; ++player) {
+        sf::Vector2f currentPos = startingPositions[player];
+
+        // Cases 1 à 7 (première direction)
+        for (int i = 1; i <= 7; ++i) {
+            cases.emplace_back(currentPos, "Parcours", player);
+            switch (player) {
+                case 0: currentPos.x += delta; break; // Jaune: +x
+                case 1: currentPos.y -= delta; break; // Bleu: -y
+                case 2: currentPos.x -= delta; break; // Rouge: -x
+                case 3: currentPos.y += delta; break; // Vert: +y
+            }
+        }
+
+        // Cases 8 à 13 (changement de direction)
+        for (int i = 8; i <= 13; ++i) {
+            cases.emplace_back(currentPos, "Parcours", player);
+            switch (player) {
+                case 0: currentPos.y += delta; break; // Jaune: +y
+                case 1: currentPos.x += delta; break; // Bleu: +x
+                case 2: currentPos.y -= delta; break; // Rouge: -y
+                case 3: currentPos.x -= delta; break; // Vert: -x
+            }
+        }
+
+        // Case 14 (connexion avec la case finale)
+        switch (player) {
+            case 0: currentPos.y -= delta; break; // Jaune: -y
+            case 1: currentPos.x -= delta; break; // Bleu: -x
+            case 2: currentPos.y += delta; break; // Rouge: +y
+            case 3: currentPos.x += delta; break; // Vert: +x
+        }
+        cases.emplace_back(currentPos, "Parcours", player);
+    }
+}
+void Jeu::lancerDe() {
+    // Générer un nombre aléatoire entre 1 et 6
+    valeurDe = rand() % 6 + 1;
+
+    // Mettre à jour le texte d'action
+    texteActions.setString("Joueur: " + playersInGame[joueurActuel].name + "\nDé: " + std::to_string(valeurDe));
+
+    if (valeurDe == 6) {
+        texteActions.setString(texteActions.getString() + "\n=> Sortez un pion !");
+    } else {
+        texteActions.setString(texteActions.getString() + "\n=> Tour suivant.");
+        passerAuJoueurSuivant();
+    }
+}
+void Jeu::passerAuJoueurSuivant() {
+    joueurActuel = (joueurActuel + 1) % playersInGame.size(); // Passer au joueur suivant
+    texteActions.setString("Joueur: " + playersInGame[joueurActuel].name + "\n=> Lancez le dé");
 }

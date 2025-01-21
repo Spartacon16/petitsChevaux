@@ -13,9 +13,9 @@ int main()
 
     sf::RenderWindow window(sf::VideoMode(800, 600), "Petits Chevaux");
     window.setFramerateLimit(60);
-
+    
     Menu menu(window);
-    Jeu  jeu(window);
+    Jeu  jeu(window,menu.font);
 
     // Boucle principale
     while (window.isOpen())

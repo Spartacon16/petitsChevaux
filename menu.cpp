@@ -143,6 +143,7 @@ Menu::Menu(sf::RenderWindow& window)
     loadSound("../bruits");
     // Charger la texture du pion
     loadTextures();
+    initPlayers();
 }
 
 void Menu::loadSound(const std::string& soundPath)
@@ -292,40 +293,52 @@ void Menu::handlePlayerSelectionEvents(sf::Event& event, sf::RenderWindow& windo
 void Menu::initPlayers()
 {
     players.clear();
+     // Couleurs pastel dans l'ordre demandé
+    std::vector<sf::Color> pastelColors = {
+        sf::Color(255, 255, 153),   // Jaune pastel
+        sf::Color(255, 153, 153),   // Rouge pastel
+        sf::Color(153, 255, 153),   // Vert pastel
+        sf::Color(153, 204, 255)    // Bleu pastel
+    };
 
     if (isPlayerComputer) {
         // “Play Alone” => J1, COM1 (2 joueurs par défaut)
         PlayerInfo p1;
         p1.name   = "J1";
-        p1.color  = sf::Color::Red;
+        p1.color  = pastelColors[0];
         p1.sprite.setTexture(pionTexture);
         p1.sprite.setColor(p1.color);
-        p1.sprite.setOrigin(16, 16); // Suppose que pion.png fait 32x32
+        p1.sprite.setOrigin(16, 16);
+        p1.sprite.setScale(0.1f,0.1f);
         players.push_back(p1);
 
         PlayerInfo p2;
         p2.name   = "COM1";
-        p2.color  = sf::Color::Green;
+        p2.color  = pastelColors[1];
         p2.sprite.setTexture(pionTexture);
         p2.sprite.setColor(p2.color);
         p2.sprite.setOrigin(16, 16);
+        p2.sprite.setScale(0.1f,0.1f);
+        
         players.push_back(p2);
     } else {
         // “Play with Others” => J1, J2
         PlayerInfo p1;
         p1.name   = "J1";
-        p1.color  = sf::Color::Red;
+        p1.color  = pastelColors[0];
         p1.sprite.setTexture(pionTexture);
         p1.sprite.setColor(p1.color);
         p1.sprite.setOrigin(16, 16);
+        p1.sprite.setScale(0.1f,0.1f);
         players.push_back(p1);
 
         PlayerInfo p2;
         p2.name   = "J2";
-        p2.color  = sf::Color::Green;
+        p2.color  = pastelColors[1];
         p2.sprite.setTexture(pionTexture);
         p2.sprite.setColor(p2.color);
         p2.sprite.setOrigin(16, 16);
+        p2.sprite.setScale(0.1f,0.1f);
         players.push_back(p2);
     }
     updatePlayerSpritesPositions();
@@ -337,33 +350,35 @@ void Menu::addPlayer()
         std::cout << "Déjà 4 joueurs, impossible d'en ajouter.\n";
         return;
     }
+
+    std::vector<sf::Color> pastelColors = {
+        sf::Color(255, 255, 153),   // Jaune pastel
+        sf::Color(255, 153, 153),   // Rouge pastel
+        sf::Color(153, 255, 153),   // Vert pastel
+        sf::Color(153, 204, 255)    // Bleu pastel
+    };
     // Nouveau joueur => On détermine le next index
     int index = (int)players.size(); // 2 => 2e ajout ; 3 => 3e ajout ...
     
-    // Table de couleurs
-    static std::array<sf::Color,4> colors = {
-        sf::Color::Red,
-        sf::Color::Green,
-        sf::Color::Blue,
-        sf::Color::Yellow
-    };
+    
 
     PlayerInfo newP;
     newP.sprite.setTexture(pionTexture);
     newP.sprite.setOrigin(16,16);
+    newP.sprite.setScale(0.1f,0.1f);
 
     if (isPlayerComputer) {
         // J1 déjà créé => ensuite COM1, COM2, COM3…
         // On a déjà 2 joueurs => index=2 => COM2
         // index=3 => COM3
-        newP.color = colors[index];   // ex: Blue => 3e
+        newP.color = pastelColors[index];   // ex: Blue => 4e
         newP.sprite.setColor(newP.color);
 
         newP.name = "COM" + std::to_string(index);
     }
     else {
         // J1, J2 => puis J3, J4
-        newP.color = colors[index];
+        newP.color = pastelColors[index];
         newP.sprite.setColor(newP.color);
 
         newP.name = "J" + std::to_string(index+1); 
@@ -377,8 +392,8 @@ void Menu::addPlayer()
 void Menu::removePlayer()
 {
     // On ne retire pas si on est déjà à 1 joueur
-    if (players.size() <= 1) {
-        std::cout << "Impossible de tomber en-dessous d'un joueur.\n";
+    if (players.size() <= 2) {
+        std::cout << "Impossible de tomber en-dessous de 2 joueur mate.\n";
         return;
     }
     players.pop_back();
@@ -387,10 +402,10 @@ void Menu::removePlayer()
 
 void Menu::updatePlayerSpritesPositions()
 {
-    // Juste un petit algo pour positionner les pions en colonne
-    float startX = 400.f;
-    float startY = 200.f;
-    float offsetY = 60.f;
+    // Juste un pti algo pour positionner les pions en colonne
+    float startX = 500.f;
+    float startY = 150.f;
+    float offsetY = 120.f;
 
     for (size_t i = 0; i < players.size(); i++) {
         players[i].sprite.setPosition(startX, startY + i * offsetY);
@@ -504,11 +519,11 @@ void Menu::renderPlayerSelection(sf::RenderWindow& window)
         sf::Text txt;
         txt.setFont(font);
         txt.setString(p.name);
-        txt.setCharacterSize(20);
+        txt.setCharacterSize(50);
         txt.setFillColor(sf::Color::White);
 
         sf::Vector2f pos = p.sprite.getPosition();
-        txt.setPosition(pos.x + 40.f, pos.y - 10.f);
+        txt.setPosition(pos.x + 100.f, pos.y - 20.f);
 
         window.draw(txt);
     }
