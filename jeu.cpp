@@ -4,9 +4,12 @@
 #include <ctime>
 
 // Constructeur
-Jeu::Jeu(sf::RenderWindow& window, const sf::Font& font)
-    : window(window), font(font), isRunning(false), joueurActuel(0), valeurDe(0) {
-    // Initialisation de la graine pour les nombres aleatoires
+Jeu::Jeu(sf::RenderWindow& window, const sf::Font& font,
+         const sf::Sound& clickSound, const sf::Sound& criSound,
+         const sf::Sound& diceSound, const std::vector<sf::Sound>& gameboardSounds)
+    : window(window), font(font), isRunning(false), joueurActuel(0), valeurDe(0),
+      clickSound(clickSound), criSound(criSound), diceSound(diceSound), gameboardSounds(gameboardSounds) {
+ // Initialisation de la graine pour les nombres aleatoires
     std::srand(static_cast<unsigned>(std::time(nullptr)));
 
     // Charger la texture du plateau
@@ -70,8 +73,9 @@ Jeu::Jeu(sf::RenderWindow& window, const sf::Font& font)
     texteActions.setString("Joueur: J1\n=> Lancez le de");
 
     setupPlateau();
-}
 
+
+    }
 // Configurer les joueurs et leurs pions
 void Jeu::setPlayers(const std::vector<PlayerInfo>& playersSelected) {
     playersInGame = playersSelected;
@@ -93,7 +97,7 @@ void Jeu::setPlayers(const std::vector<PlayerInfo>& playersSelected) {
                 startingPositions[i].y + (j / 2) * 50.f
             };
             pion.sprite.setPosition(pion.startPosition);
-
+            pion.isOut = false; // Initialisation des pions comme étant dans la prison
             pionsJoueur.push_back(pion);
         }
 
@@ -112,6 +116,26 @@ void Jeu::handleEvents(sf::RenderWindow& window) {
             sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
             if (boutonLancerDe.getGlobalBounds().contains(mousePos)) {
                 lancerDe();
+            } else {
+            gererClicPion(mousePos);
+            }
+        }
+    }
+}
+
+// Gérer le clic sur un pion
+void Jeu::gererClicPion(const sf::Vector2f& mousePos) {
+    for (PionInfo& pion : playerPions[joueurActuel]) {
+        if (pion.sprite.getGlobalBounds().contains(mousePos)) {
+            if (valeurDe > 0 && pion.isOut) { // Déplacement si le pion est déjà sorti
+                avancerPion(pion);
+                passerAuJoueurSuivant();
+                return;
+            }
+            if (valeurDe == 6 && !pion.isOut) { // Sortir un pion si on fait 6
+                sortirPion(pion);
+                passerAuJoueurSuivant();
+                return;
             }
         }
     }
@@ -119,26 +143,46 @@ void Jeu::handleEvents(sf::RenderWindow& window) {
 
 // Lancer le dé
 void Jeu::lancerDe() {
-    // Generer un nombre aleatoire entre 1 et 6
-    valeurDe = rand() % 6 + 1;
+    // Jouer le son du dé
+    diceSound.play();
 
-    // Mettre a jour le texte d'action
-    std::string message = "Joueur: " + playersInGame[joueurActuel].name + "\nDe: " + std::to_string(valeurDe);
+    valeurDe = rand() % 6 + 1;
+    texteActions.setString("Joueur: " + playersInGame[joueurActuel].name + "\nDe: " + std::to_string(valeurDe));
 
     if (valeurDe == 6) {
-        message += "\n=> Sortez un pion de la prison !";
-        // Ajouter ici la logique pour permettre au joueur de sortir un pion
+        texteActions.setString(texteActions.getString() + "\n=> Sortez un pion ou avancez.");
     } else {
-        message += "\n=> Tour suivant.";
-        passerAuJoueurSuivant();
+        texteActions.setString(texteActions.getString() + "\n=> Avancez un pion.");
     }
-
-    texteActions.setString(message);
 }
+
+// Sortir un pion
+void Jeu::sortirPion(PionInfo& pion) {
+    pion.isOut = true;
+    pion.sprite.setPosition(getCasePosition(0, joueurActuel)); // Place le pion sur la case 1
+    texteActions.setString("Joueur: " + playersInGame[joueurActuel].name + "\nPion sorti !");
+}
+
+// Avancer un pion
+void Jeu::avancerPion(PionInfo& pion) {
+    // Trouver la position actuelle du pion
+    sf::Vector2f positionActuelle = pion.sprite.getPosition();
+    int caseActuelle = trouverIndexCase(positionActuelle);
+    int nouvelleCase = (caseActuelle + valeurDe) % cases.size();
+    pion.sprite.setPosition(cases[nouvelleCase].position);
+
+    // Jouer un son aléatoire
+    int sonIndex = rand() % 4;
+    gameboardSounds[sonIndex].play();
+
+    texteActions.setString("Joueur: " + playersInGame[joueurActuel].name + "\nPion avance !");
+}
+
 
 // Passer au joueur suivant
 void Jeu::passerAuJoueurSuivant() {
     joueurActuel = (joueurActuel + 1) % playersInGame.size();
+    valeurDe = 0; // Réinitialiser le dé
     texteActions.setString("Joueur: " + playersInGame[joueurActuel].name + "\n=> Lancez le de");
 }
 
@@ -167,7 +211,6 @@ void Jeu::render(sf::RenderWindow& window) {
 // Configurer le plateau
 void Jeu::setupPlateau() {
     generateParcours();
-
     // Ajouter la case "Victoire" au centre
     cases.emplace_back(sf::Vector2f(300.f, 300.f), "Victoire");
 }
@@ -233,4 +276,19 @@ void Jeu::run(sf::RenderWindow& window) {
 void Jeu::update() {
     // Ici, ajoutez les règles du jeu ou la logique de déplacement
 }
-
+sf::Vector2f Jeu::getCasePosition(int caseIndex, int joueur) {
+    // Exemple : Retourne la position de la case sur le plateau
+    if (caseIndex < 0 || caseIndex >= cases.size()) {
+        return sf::Vector2f(0.f, 0.f); // Valeur de secours
+    }
+    return cases[caseIndex].position;
+}
+int Jeu::trouverIndexCase(const sf::Vector2f& position) {
+    // Parcourir les cases pour trouver celle correspondant à la position
+    for (size_t i = 0; i < cases.size(); ++i) {
+        if (cases[i].position == position) {
+            return static_cast<int>(i);
+        }
+    }
+    return -1; // Case non trouvée
+}

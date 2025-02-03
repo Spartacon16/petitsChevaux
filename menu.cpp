@@ -146,44 +146,42 @@ Menu::Menu(sf::RenderWindow& window)
     initPlayers();
 }
 
-void Menu::loadSound(const std::string& soundPath)
-{
+void Menu::loadSound(const std::string& soundPath) {
     if (!clickBuffer.loadFromFile(soundPath + "/clic.mp3")) {
         std::cerr << "Impossible de charger clic.mp3\n";
     }
     clickSound.setBuffer(clickBuffer);
 
-    // De même pour les autres :
-    if (!CriBuffer.loadFromFile(soundPath + "/cri.mp3")) {
+    if (!criBuffer.loadFromFile(soundPath + "/cri.mp3")) {
         std::cerr << "Impossible de charger cri.mp3\n";
     }
-    cri.setBuffer(CriBuffer);
+    cri.setBuffer(criBuffer);
 
     if (!diceBuffer.loadFromFile(soundPath + "/dice.mp3")) {
         std::cerr << "Impossible de charger dice.mp3\n";
     }
     dice.setBuffer(diceBuffer);
 
-    if (!gameboardSoundBuffer1.loadFromFile(soundPath + "/gameboard1.mp3")) {
-        std::cerr << "Impossible de charger gameboard1.mp3\n";
-    }
-    gameboardSound1.setBuffer(gameboardSoundBuffer1);
+    std::vector<std::string> soundFiles = {
+        "gameboard1.mp3", "gameboard2.mp3", "gameboard3.mp3", "gameboard4.mp3"
+    };
 
-    if (!gameboardSoundBuffer2.loadFromFile(soundPath + "/gameboard2.mp3")) {
-        std::cerr << "Impossible de charger gameboard2.mp3\n";
-    }
-    gameboardSound2.setBuffer(gameboardSoundBuffer2);
+    gameboardSoundBuffers.clear();
+    gameboardSounds.clear();
 
-    if (!gameboardSoundBuffer3.loadFromFile(soundPath + "/gameboard3.mp3")) {
-        std::cerr << "Impossible de charger gameboard3.mp3\n";
+    for (const auto& file : soundFiles) {
+        sf::SoundBuffer buffer;
+        if (!buffer.loadFromFile(soundPath + "/" + file)) {
+            std::cerr << "Impossible de charger " << file << "\n";
+            continue;
+        }
+        gameboardSoundBuffers.push_back(buffer);
+        sf::Sound sound;
+        sound.setBuffer(gameboardSoundBuffers.back());
+        gameboardSounds.push_back(sound);
     }
-    gameboardSound3.setBuffer(gameboardSoundBuffer3);
-
-    if (!gameboardSoundBuffer4.loadFromFile(soundPath + "/gameboard4.mp3")) {
-        std::cerr << "Impossible de charger gameboard4.mp3\n";
-    }
-    gameboardSound4.setBuffer(gameboardSoundBuffer4);
 }
+
 
 void Menu::loadTextures()
 {

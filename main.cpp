@@ -15,7 +15,9 @@ int main()
     window.setFramerateLimit(60);
     
     Menu menu(window);
-    Jeu  jeu(window,menu.font);
+    Jeu jeu(window, menu.font,
+        menu.getClickSound(), menu.getCriSound(),
+        menu.getDiceSound(), menu.getGameboardSounds());
 
     // Boucle principale
     while (window.isOpen())

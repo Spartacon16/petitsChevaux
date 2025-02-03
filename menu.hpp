@@ -21,8 +21,7 @@ struct PlayerInfo {
     sf::Sprite sprite;     // Pour afficher le pion
 };
 
-class Menu
-{
+class Menu {
 public:
     Menu(sf::RenderWindow& window);
 
@@ -32,17 +31,24 @@ public:
     // Dessine (render) l'état actuel du menu
     void render(sf::RenderWindow& window);
 
-    // Getter/Setter pour l’état du Menu
+    // Getter/Setter pour l'état du Menu
     MenuState getCurrentState() const { return currentState; }
-    void      setCurrentState(MenuState state) { currentState = state; }
+    void setCurrentState(MenuState state) { currentState = state; }
 
     // Permettra au Jeu de savoir qui a été sélectionné
     const std::vector<PlayerInfo>& getPlayers() const { return players; }
 
+    // Accesseurs pour les sons
+    const sf::Sound& getClickSound() const { return clickSound; }
+    const sf::Sound& getCriSound() const { return cri; }
+    const sf::Sound& getDiceSound() const { return dice; }
+    const std::vector<sf::Sound>& getGameboardSounds() const { return gameboardSounds; }
+
     // Ressources graphiques
-    sf::Font     font;
-    sf::Texture  backgroundTexture;
-    sf::Sprite   backgroundSprite;
+    sf::Font font;
+    sf::Texture backgroundTexture;
+    sf::Sprite backgroundSprite;
+
 private:
     // Fonctions internes
     void loadSound(const std::string& soundPath);
@@ -61,7 +67,7 @@ private:
     // --- Gestion du Player Selection ---
     void initPlayers();     // Initialise 2 joueurs par défaut selon isPlayerComputer
     void addPlayer();       // Ajoute un nouveau joueur (max 4)
-    void removePlayer();    // Retire le dernier joueur (min 1)
+    void removePlayer();    // Retire le dernier joueur (min 2)
     void updatePlayerSpritesPositions(); // Aligne les pions dans le menu
 
     // Référence sur la fenêtre principale
@@ -69,7 +75,6 @@ private:
 
     // État courant (MAIN_MENU, PLAYER_SELECTION, GAME_RUNNING)
     MenuState currentState;
-
 
     // Boutons du Main Menu
     sf::RectangleShape playAloneButton, playWithOthersButton, quitButton;
@@ -79,22 +84,20 @@ private:
     // Menu "Player Selection"
     sf::CircleShape Xbutton;
     int circlerayon;
-    sf::RectangleShape plusButton, minusButton;   // Pour ajouter/retirer un joueur
+    sf::RectangleShape plusButton, minusButton;
     sf::Text plusText, minusText, neonPlusText, neonMinusText;
-
     sf::RectangleShape startButton;
     sf::Text startText, neonTextStart;
 
     // Sons divers
-    sf::SoundBuffer clickBuffer, CriBuffer, diceBuffer,
-                    gameboardSoundBuffer1, gameboardSoundBuffer2,
-                    gameboardSoundBuffer3, gameboardSoundBuffer4;
-    sf::Sound clickSound, cri, dice,
-              gameboardSound1, gameboardSound2,
-              gameboardSound3, gameboardSound4;
+    sf::SoundBuffer clickBuffer, criBuffer, diceBuffer;
+    sf::Sound clickSound, cri, dice;
+
+    std::vector<sf::SoundBuffer> gameboardSoundBuffers; // Stocke les buffers des sons du plateau
+    std::vector<sf::Sound> gameboardSounds; // Stocke les sons associés
 
     // Joueurs sélectionnés
-    std::vector<PlayerInfo> players;  
+    std::vector<PlayerInfo> players;
 
     // Texture du pion
     sf::Texture pionTexture;
