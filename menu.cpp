@@ -307,7 +307,7 @@ void Menu::initPlayers()
         p1.sprite.setTexture(pionTexture);
         p1.sprite.setColor(p1.color);
         p1.sprite.setOrigin(16, 16);
-        p1.sprite.setScale(0.1f,0.1f);
+        p1.sprite.setScale(0.08f,0.08f);
         players.push_back(p1);
 
         PlayerInfo p2;
@@ -316,7 +316,7 @@ void Menu::initPlayers()
         p2.sprite.setTexture(pionTexture);
         p2.sprite.setColor(p2.color);
         p2.sprite.setOrigin(16, 16);
-        p2.sprite.setScale(0.1f,0.1f);
+        p2.sprite.setScale(0.08f,0.08f);
         
         players.push_back(p2);
     } else {
@@ -327,7 +327,7 @@ void Menu::initPlayers()
         p1.sprite.setTexture(pionTexture);
         p1.sprite.setColor(p1.color);
         p1.sprite.setOrigin(16, 16);
-        p1.sprite.setScale(0.1f,0.1f);
+        p1.sprite.setScale(0.08f,0.08f);
         players.push_back(p1);
 
         PlayerInfo p2;
@@ -336,7 +336,7 @@ void Menu::initPlayers()
         p2.sprite.setTexture(pionTexture);
         p2.sprite.setColor(p2.color);
         p2.sprite.setOrigin(16, 16);
-        p2.sprite.setScale(0.1f,0.1f);
+        p2.sprite.setScale(0.08f,0.08f);
         players.push_back(p2);
     }
     updatePlayerSpritesPositions();
@@ -363,7 +363,7 @@ void Menu::addPlayer()
     PlayerInfo newP;
     newP.sprite.setTexture(pionTexture);
     newP.sprite.setOrigin(16,16);
-    newP.sprite.setScale(0.1f,0.1f);
+    newP.sprite.setScale(0.08f,0.08f);
 
     if (isPlayerComputer) {
         // J1 déjà créé => ensuite COM1, COM2, COM3…
@@ -402,7 +402,7 @@ void Menu::updatePlayerSpritesPositions()
 {
     // Juste un pti algo pour positionner les pions en colonne
     float startX = 500.f;
-    float startY = 150.f;
+    float startY = 120.f;
     float offsetY = 120.f;
 
     for (size_t i = 0; i < players.size(); i++) {
@@ -521,7 +521,7 @@ void Menu::renderPlayerSelection(sf::RenderWindow& window)
         txt.setFillColor(sf::Color::White);
 
         sf::Vector2f pos = p.sprite.getPosition();
-        txt.setPosition(pos.x + 100.f, pos.y - 20.f);
+        txt.setPosition(pos.x + 100.f, pos.y+10.f);
 
         window.draw(txt);
     }

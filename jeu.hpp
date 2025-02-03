@@ -51,6 +51,7 @@ private:
     int joueurActuel;         // Index du joueur actuel
     int valeurDe;             // Valeur actuelle du dé
     float pionScale;           // Échelle des pions
+    bool diceRolled;          // Indique si le dé a été lancé
     // Textures et éléments graphiques
     sf::Texture plateauTexture;
     sf::Sprite plateauSprite;

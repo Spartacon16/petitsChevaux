@@ -2,6 +2,8 @@
 #include <iostream>
 #include <cstdlib>
 #include <ctime>
+#include <limits>
+#include <cmath>
 
 // Constructeur
 Jeu::Jeu(sf::RenderWindow& window, const sf::Font& font,
@@ -9,7 +11,7 @@ Jeu::Jeu(sf::RenderWindow& window, const sf::Font& font,
          const sf::Sound& diceSound, const std::vector<sf::Sound>& gameboardSounds)
     : window(window), font(font), isRunning(false), joueurActuel(0), valeurDe(0),
       clickSound(clickSound), criSound(criSound), diceSound(diceSound), gameboardSounds(gameboardSounds) {
- // Initialisation de la graine pour les nombres aleatoires
+    // Initialisation de la graine pour les nombres aleatoires
     std::srand(static_cast<unsigned>(std::time(nullptr)));
 
     // Charger la texture du plateau
@@ -73,9 +75,9 @@ Jeu::Jeu(sf::RenderWindow& window, const sf::Font& font,
     texteActions.setString("Joueur: J1\n=> Lancez le de");
 
     setupPlateau();
+    diceRolled = false;
+}
 
-
-    }
 // Configurer les joueurs et leurs pions
 void Jeu::setPlayers(const std::vector<PlayerInfo>& playersSelected) {
     playersInGame = playersSelected;
@@ -114,10 +116,13 @@ void Jeu::handleEvents(sf::RenderWindow& window) {
         }
         if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) {
             sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
-            if (boutonLancerDe.getGlobalBounds().contains(mousePos)) {
+            if (boutonLancerDe.getGlobalBounds().contains(mousePos)&& !diceRolled) {
                 lancerDe();
+                if (valeurDe != 6 && std::none_of(playerPions[joueurActuel].begin(), playerPions[joueurActuel].end(), [](const PionInfo& pion) { return pion.isOut; })) {
+                    passerAuJoueurSuivant();
+                }
             } else {
-            gererClicPion(mousePos);
+                gererClicPion(mousePos);
             }
         }
     }
@@ -147,20 +152,72 @@ void Jeu::lancerDe() {
     diceSound.play();
 
     valeurDe = rand() % 6 + 1;
-    texteActions.setString("Joueur: " + playersInGame[joueurActuel].name + "\nDe: " + std::to_string(valeurDe));
+    std::string message = "Joueur: " + playersInGame[joueurActuel].name + "\nDe: " + std::to_string(valeurDe);
+    std::cout << "Valeur du de: " << valeurDe << std::endl;
+    // Ajouter la couleur du pion à côté du nom du joueur
+    sf::Text playerName;
+    playerName.setFont(font);
+    playerName.setString(playersInGame[joueurActuel].name);
+    playerName.setFillColor(playerColors[joueurActuel]);
+    playerName.setCharacterSize(20);
+    playerName.setPosition(texteActions.getPosition().x, texteActions.getPosition().y + 30);
 
-    if (valeurDe == 6) {
-        texteActions.setString(texteActions.getString() + "\n=> Sortez un pion ou avancez.");
-    } else {
-        texteActions.setString(texteActions.getString() + "\n=> Avancez un pion.");
+    texteActions.setString(message);
+    diceRolled = true; // Indiquer que le dé a été lancé pour ce tour
+
+    if (valeurDe == 6 && std::none_of(playerPions[joueurActuel].begin(), playerPions[joueurActuel].end(), [](const PionInfo& pion) { return pion.isOut; })) {
+        if (std::any_of(playerPions[joueurActuel].begin(), playerPions[joueurActuel].end(), [](const PionInfo& pion) { return !pion.isOut; })) {
+            message += "\n=> Sortez un pion.";
+            texteActions.setString(message);
+        } else {
+            message += "\n=> Sortez un pion \nou avancez.";
+            texteActions.setString(message);
+        }
+        
+    } else if (std::none_of(playerPions[joueurActuel].begin(), playerPions[joueurActuel].end(), [](const PionInfo& pion) { return pion.isOut; })) {
+        message += "\n=> Joueur suivant...";
+        texteActions.setString(message);
+        return;
+    } 
+    else {
+        message += "\n=> Avancez un pion.";
+        texteActions.setString(message);
     }
 }
 
 // Sortir un pion
 void Jeu::sortirPion(PionInfo& pion) {
+     // Vérifier si un pion de la même couleur est déjà sur la case cible
+    int nouvelleCase = (valeurDe) % cases.size();
+    for (const PionInfo& autrePion : playerPions[joueurActuel]) {
+        if (&autrePion != &pion && autrePion.isOut && autrePion.sprite.getPosition() == cases[nouvelleCase].position) {
+            // Empêcher le déplacement
+            std::string message = "Joueur: " + playersInGame[joueurActuel].name + "\nImpossible de passer\n meme couleur!";
+            texteActions.setString(message);
+            std::cout << message << std::endl;
+            return; // Bloquer le mouvement
+        }
+    }
+    if (joueurActuel == 0) {
+        pion.sprite.setPosition(getCasePosition(0, joueurActuel)); // Yellow start
+    } else if (joueurActuel == 3) {
+        pion.sprite.setPosition(getCasePosition(14, joueurActuel)); // Blue start
+    } else if (joueurActuel == 1) {
+        pion.sprite.setPosition(getCasePosition(28, joueurActuel)); // Red start
+    } else if (joueurActuel == 2) {
+        pion.sprite.setPosition(getCasePosition(42, joueurActuel)); // Green start
+    }
     pion.isOut = true;
-    pion.sprite.setPosition(getCasePosition(0, joueurActuel)); // Place le pion sur la case 1
-    texteActions.setString("Joueur: " + playersInGame[joueurActuel].name + "\nPion sorti !");
+
+   
+    // Jouer un son de plateau aléatoire
+    int sonIndex = rand() % gameboardSounds.size();
+    gameboardSounds[sonIndex].play();
+
+    std::string message = "Joueur: " + playersInGame[joueurActuel].name + "\nPion sorti !";
+    texteActions.setString(message);   
+    // Log the position to the console
+    std::cout << "Pion sorti à la position: (" << pion.startPosition.x << ", " << pion.startPosition.y << ")" << std::endl;
 }
 
 // Avancer un pion
@@ -169,21 +226,68 @@ void Jeu::avancerPion(PionInfo& pion) {
     sf::Vector2f positionActuelle = pion.sprite.getPosition();
     int caseActuelle = trouverIndexCase(positionActuelle);
     int nouvelleCase = (caseActuelle + valeurDe) % cases.size();
-    pion.sprite.setPosition(cases[nouvelleCase].position);
+     // 🏆 **Si le pion est sur la case avant la victoire, exiger un 6**
+    if (cases[nouvelleCase].type == "Victoire" && valeurDe != 6) {
+        std::string message = "Joueur: " + playersInGame[joueurActuel].name + "\nUn 6 est requis\n pour gagner!";
+        texteActions.setString(message);
+        std::cout << message << std::endl;
+        return;
+    }
+    // Vérifier si un pion de la même couleur est déjà sur la case cible
+    for (const PionInfo& autrePion : playerPions[joueurActuel]) {
+        if (&autrePion != &pion && autrePion.isOut && autrePion.sprite.getPosition() == cases[nouvelleCase].position) {
+            // Empêcher le déplacement
+            std::string message = "Joueur: " + playersInGame[joueurActuel].name + "\nImpossible de passer\n meme couleur!";
+            texteActions.setString(message);
+            std::cout << message << std::endl;
+            return; // Bloquer le mouvement
+        }
+    }
+    // Animation du déplacement du pion
+    sf::Vector2f startPosition = pion.sprite.getPosition();
+    sf::Vector2f endPosition = cases[nouvelleCase].position;
+    sf::Clock clock;
+    while (clock.getElapsedTime().asSeconds() < 1.0f) {
+        float progress = clock.getElapsedTime().asSeconds();
+        pion.sprite.setPosition(startPosition + progress * (endPosition - startPosition));
+        render(window);
+    }
+    pion.sprite.setPosition(endPosition);
 
-    // Jouer un son aléatoire
-    int sonIndex = rand() % 4;
+    // Jouer un son de plateau aléatoire
+    int sonIndex = rand() % gameboardSounds.size();
     gameboardSounds[sonIndex].play();
 
-    texteActions.setString("Joueur: " + playersInGame[joueurActuel].name + "\nPion avance !");
-}
+    std::string message = "Joueur: " + playersInGame[joueurActuel].name + "\nPion avance !";
+    texteActions.setString(message);// Log the new position to the console
+    std::cout << "Pion avancé à la position: (" << cases[nouvelleCase].position.x << ", " << cases[nouvelleCase].position.y << ")" << std::endl;
 
+    // Vérifier si un pion adverse est sur la nouvelle case ou a été sauté
+    for (auto& pionsJoueur : playerPions) {
+        for (auto& autrePion : pionsJoueur) {
+            int caseAutrePion = trouverIndexCase(autrePion.sprite.getPosition());
+            if (autrePion.isOut && &autrePion != &pion && 
+                (autrePion.sprite.getPosition() == pion.sprite.getPosition() || 
+                (caseAutrePion > caseActuelle && caseAutrePion <= nouvelleCase))) {
+                // Remettre le pion adverse dans sa prison
+                autrePion.sprite.setPosition(autrePion.startPosition);
+                autrePion.isOut = false;
+                std::cout << "Pion adverse renvoyé à la prison: (" << autrePion.startPosition.x << ", " << autrePion.startPosition.y << ")" << std::endl;
+            }
+        }
+    }
+}
 
 // Passer au joueur suivant
 void Jeu::passerAuJoueurSuivant() {
-    joueurActuel = (joueurActuel + 1) % playersInGame.size();
-    valeurDe = 0; // Réinitialiser le dé
-    texteActions.setString("Joueur: " + playersInGame[joueurActuel].name + "\n=> Lancez le de");
+    if (!playersInGame.empty()) {
+        joueurActuel = (joueurActuel + 1) % playersInGame.size();
+        valeurDe = 0; // Réinitialiser le dé
+        diceRolled=false; // Réinitialiser le dé lancé
+        std::string message = "Joueur: " + playersInGame[joueurActuel].name + "\n=> Lancez le de";
+        texteActions.setString(message);
+        std::cout << message << std::endl;
+    }
 }
 
 // Afficher le jeu
@@ -212,52 +316,65 @@ void Jeu::render(sf::RenderWindow& window) {
 void Jeu::setupPlateau() {
     generateParcours();
     // Ajouter la case "Victoire" au centre
-    cases.emplace_back(sf::Vector2f(300.f, 300.f), "Victoire");
+    cases.emplace_back(sf::Vector2f(300.f, 300.f), "Victoire",0);
+    cases.emplace_back(sf::Vector2f(300.f, 300.f), "Victoire",1);
+    cases.emplace_back(sf::Vector2f(300.f, 300.f), "Victoire",2);
+    cases.emplace_back(sf::Vector2f(300.f, 300.f), "Victoire",3);
 }
 
 // Generer les cases du parcours
 void Jeu::generateParcours() {
-    const float delta = 14.f;
-    sf::Vector2f startingPositions[4] = {
-        {16.5f, 98.5f},  // Jaune
-        {98.5f, 16.5f},  // Bleu
-        {500.5f, 98.5f}, // Rouge
-        {98.5f, 500.5f}  // Vert
-    };
+    // Facteur d'agrandissement du plateau
+    const float scaleFactor = 600.f / 225.f;
+    const float delta = 14.0f * scaleFactor;
+    const sf::Vector2f yellowStart(16.5f * scaleFactor, 98.5f * scaleFactor);
+    const sf::Vector2f blueStart(16.5f * scaleFactor+ 8*delta, 98.5f * scaleFactor - 6 * delta);
+    const sf::Vector2f redStart(16.5f * scaleFactor + 14 * delta, 98.5f * scaleFactor + 2 * delta);
+    const sf::Vector2f greenStart(16.5f * scaleFactor + 6 * delta, 98.5f * scaleFactor + 8 * delta);
 
-    for (int player = 0; player < 4; ++player) {
-        sf::Vector2f currentPos = startingPositions[player];
-
-        // Cases 1 a 7
-        for (int i = 1; i <= 7; ++i) {
-            cases.emplace_back(currentPos, "Parcours", player);
-            switch (player) {
-                case 0: currentPos.x += delta; break; // Jaune
-                case 1: currentPos.y -= delta; break; // Bleu
-                case 2: currentPos.x -= delta; break; // Rouge
-                case 3: currentPos.y += delta; break; // Vert
-            }
+     // Cases du parcours pour chaque joueur
+     int i;
+    for (i = 0; i < 14; ++i) {
+        // 🟡 Cases Jaunes +1 bleu
+        if (i < 7) {
+            cases.push_back({yellowStart + sf::Vector2f(i * delta, 0), "Parcours", 0});
+        } else if (i < 13) {
+            cases.push_back({yellowStart + sf::Vector2f(6 * delta, -(i - 6) * delta), "Parcours", 0});
+        } else {
+            cases.push_back({yellowStart + sf::Vector2f(7 * delta, -6 * delta), "Parcours", 1});
         }
-
-        // Cases 8 a 13
-        for (int i = 8; i <= 13; ++i) {
-            cases.emplace_back(currentPos, "Parcours", player);
-            switch (player) {
-                case 0: currentPos.y += delta; break;
-                case 1: currentPos.x += delta; break;
-                case 2: currentPos.y -= delta; break;
-                case 3: currentPos.x -= delta; break;
-            }
+    }
+    for (i = 0; i < 14; ++i){
+        // 🔵 Cases Bleues +1 rouge
+        if (i < 7) {
+            cases.push_back({blueStart + sf::Vector2f(0, i * delta), "Parcours", 1});
+        } else if (i < 13) {
+            cases.push_back({blueStart + sf::Vector2f((i - 6) * delta, 6 * delta), "Parcours", 1});
+        } else {
+            cases.push_back({blueStart + sf::Vector2f(6 * delta, 7 * delta), "Parcours", 2});
         }
+    }
+    for (i = 0; i < 14; ++i){
 
-        // Case 14
-        switch (player) {
-            case 0: currentPos.y -= delta; break;
-            case 1: currentPos.x -= delta; break;
-            case 2: currentPos.y += delta; break;
-            case 3: currentPos.x += delta; break;
+        // 🔴 Cases Rouges +1 vert
+        if (i < 7) {
+            cases.push_back({redStart + sf::Vector2f(-i * delta, 0), "Parcours", 2});
+        } else if (i < 13) {
+            cases.push_back({redStart + sf::Vector2f(-6 * delta, (i - 6) * delta), "Parcours", 2});
+        } else {
+            cases.push_back({redStart + sf::Vector2f(-7 * delta, 6 * delta), "Parcours", 3});
         }
-        cases.emplace_back(currentPos, "Parcours", player);
+    }
+    for (i = 0; i < 14; ++i){
+
+        // 🟢 Cases Vertes +1 jaune
+        if (i < 7) {
+            cases.push_back({greenStart + sf::Vector2f(0, -i * delta), "Parcours", 3});
+        } else if (i < 13) {
+            cases.push_back({greenStart + sf::Vector2f(-(i - 6) * delta,- 6 * delta), "Parcours", 3});
+        } else {
+            cases.push_back({greenStart + sf::Vector2f(-6 * delta, -7 * delta), "Parcours", 0});
+        }
     }
 }
 
@@ -276,19 +393,25 @@ void Jeu::run(sf::RenderWindow& window) {
 void Jeu::update() {
     // Ici, ajoutez les règles du jeu ou la logique de déplacement
 }
+
 sf::Vector2f Jeu::getCasePosition(int caseIndex, int joueur) {
     // Exemple : Retourne la position de la case sur le plateau
-    if (caseIndex < 0 || caseIndex >= cases.size()) {
+    if (caseIndex < 0 || caseIndex >= static_cast<int>(cases.size())) {
         return sf::Vector2f(0.f, 0.f); // Valeur de secours
     }
     return cases[caseIndex].position;
 }
+
 int Jeu::trouverIndexCase(const sf::Vector2f& position) {
-    // Parcourir les cases pour trouver celle correspondant à la position
+    int bestIndex = -1;
+    float minDist = std::numeric_limits<float>::max();
+
     for (size_t i = 0; i < cases.size(); ++i) {
-        if (cases[i].position == position) {
-            return static_cast<int>(i);
+        float distance = std::hypot(cases[i].position.x - position.x, cases[i].position.y - position.y);
+        if (distance < minDist) {
+            minDist = distance;
+            bestIndex = static_cast<int>(i);
         }
     }
-    return -1; // Case non trouvée
+    return bestIndex;
 }
