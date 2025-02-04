@@ -52,6 +52,8 @@ private:
     int valeurDe;             // Valeur actuelle du dé
     float pionScale;           // Échelle des pions
     bool diceRolled;          // Indique si le dé a été lancé
+    bool attenteValidation; // Indique si on attend une validation (bouton "OK")
+
     // Textures et éléments graphiques
     sf::Texture plateauTexture;
     sf::Sprite plateauSprite;
@@ -60,6 +62,7 @@ private:
     sf::Text texteLancerDe;
     sf::Text texteActions;
     sf::Font font;
+    sf::Sprite txt_pionJoueurActuel;
 
     // Gestion des joueurs et pions
     std::vector<PlayerInfo> playersInGame;           // Joueurs sélectionnés

@@ -36,16 +36,14 @@ int main()
         { 
             // On récupère la liste des joueurs choisis
             auto& playersSelected = menu.getPlayers();
-
             // On transmet ces joueurs à la classe Jeu
             jeu.setPlayers(playersSelected);
-
             // Lancement du jeu
             jeu.run(window);
-
             // Lorsque la boucle jeu s'arrêtera (isRunning = false), on repasse au MAIN_MENU
             menu.setCurrentState(MAIN_MENU);
         }
+        
     }
 
     return 0;

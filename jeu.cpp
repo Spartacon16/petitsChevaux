@@ -73,9 +73,17 @@ Jeu::Jeu(sf::RenderWindow& window, const sf::Font& font,
     texteActions.setFillColor(sf::Color::Black);
     texteActions.setPosition(610.f, 50.f);
     texteActions.setString("Joueur: J1\n=> Lancez le de");
+    // Pion du joueur actuel (affiché à droite du texte des actions)
+    txt_pionJoueurActuel.setTexture(pionTexture);
+    txt_pionJoueurActuel.setOrigin(400.f, 400.f); // Centrer le sprite
+    txt_pionJoueurActuel.setScale(pionScale, pionScale); // Même échelle que les autres pions
+    txt_pionJoueurActuel.setColor(playerColors[joueurActuel]); // Couleur du premier joueur
+    txt_pionJoueurActuel.setPosition(texteActions.getPosition().x + 150.f, texteActions.getPosition().y - 10.f);
 
     setupPlateau();
     diceRolled = false;
+    attenteValidation = false;
+
 }
 
 // Configurer les joueurs et leurs pions
@@ -116,10 +124,14 @@ void Jeu::handleEvents(sf::RenderWindow& window) {
         }
         if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) {
             sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
-            if (boutonLancerDe.getGlobalBounds().contains(mousePos)&& !diceRolled) {
-                lancerDe();
-                if (valeurDe != 6 && std::none_of(playerPions[joueurActuel].begin(), playerPions[joueurActuel].end(), [](const PionInfo& pion) { return pion.isOut; })) {
+            if (boutonLancerDe.getGlobalBounds().contains(mousePos)) {
+                if (attenteValidation) {
+                    // Désactiver "OK" et passer au joueur suivant
+                    attenteValidation = false;
+                    texteLancerDe.setString("Lancer le de");
                     passerAuJoueurSuivant();
+                } else if (!diceRolled) {
+                    lancerDe();
                 }
             } else {
                 gererClicPion(mousePos);
@@ -150,7 +162,6 @@ void Jeu::gererClicPion(const sf::Vector2f& mousePos) {
 void Jeu::lancerDe() {
     // Jouer le son du dé
     diceSound.play();
-
     valeurDe = rand() % 6 + 1;
     std::string message = "Joueur: " + playersInGame[joueurActuel].name + "\nDe: " + std::to_string(valeurDe);
     std::cout << "Valeur du de: " << valeurDe << std::endl;
@@ -177,6 +188,9 @@ void Jeu::lancerDe() {
     } else if (std::none_of(playerPions[joueurActuel].begin(), playerPions[joueurActuel].end(), [](const PionInfo& pion) { return pion.isOut; })) {
         message += "\n=> Joueur suivant...";
         texteActions.setString(message);
+        // Activer le mode "OK"
+        attenteValidation = true;
+        texteLancerDe.setString("OK");
         return;
     } 
     else {
@@ -226,11 +240,39 @@ void Jeu::avancerPion(PionInfo& pion) {
     sf::Vector2f positionActuelle = pion.sprite.getPosition();
     int caseActuelle = trouverIndexCase(positionActuelle);
     int nouvelleCase = (caseActuelle + valeurDe) % cases.size();
-     // 🏆 **Si le pion est sur la case avant la victoire, exiger un 6**
-    if (cases[nouvelleCase].type == "Victoire" && valeurDe != 6) {
-        std::string message = "Joueur: " + playersInGame[joueurActuel].name + "\nUn 6 est requis\n pour gagner!";
+    int caseFinale;
+    switch (joueurActuel) {
+        case 0: caseFinale = 55; break; // Jaune
+        case 1: caseFinale = 27; break; // Rouge
+        case 2: caseFinale = 41; break; // Vert
+        case 3: caseFinale = 13; break; // Bleu
+        default: caseFinale = -1; break;
+    }
+    // 📌 Empêcher d'avancer si la case dépasse la case finale
+    if (caseActuelle < caseFinale && nouvelleCase > caseFinale) {
+        std::string message = "Joueur: " + playersInGame[joueurActuel].name + 
+                              "\nVous ne pouvez pas dépasser votre case finale.";
         texteActions.setString(message);
         std::cout << message << std::endl;
+        return;
+    }
+    // 📌 Vérifier si le pion est déjà sur la case finale et doit attendre un 6
+    
+
+    if (caseActuelle == caseFinale) {
+        if (valeurDe == 6) {
+            // 🏆 Victoire !
+            std::string message = "🎉 " + playersInGame[joueurActuel].name + " a gagné ! 🎉";
+            texteActions.setString(message);
+            std::cout << message << std::endl;
+            isRunning = false; // Fin du jeu
+        } else {
+            // 📌 Afficher un message pour dire qu'il faut un 6
+            std::string message = "Joueur: " + playersInGame[joueurActuel].name + 
+                                  "\nVous devez faire un 6 pour gagner!";
+            texteActions.setString(message);
+            std::cout << message << std::endl;
+        }
         return;
     }
     // Vérifier si un pion de la même couleur est déjà sur la case cible
@@ -256,6 +298,7 @@ void Jeu::avancerPion(PionInfo& pion) {
 
     // Jouer un son de plateau aléatoire
     int sonIndex = rand() % gameboardSounds.size();
+    gameboardSounds[sonIndex].setVolume(300.f);
     gameboardSounds[sonIndex].play();
 
     std::string message = "Joueur: " + playersInGame[joueurActuel].name + "\nPion avance !";
@@ -287,6 +330,8 @@ void Jeu::passerAuJoueurSuivant() {
         std::string message = "Joueur: " + playersInGame[joueurActuel].name + "\n=> Lancez le de";
         texteActions.setString(message);
         std::cout << message << std::endl;
+        // 🔄 Mettre à jour l'apparence du pion actuel
+        txt_pionJoueurActuel.setColor(playerColors[joueurActuel]);
     }
 }
 
@@ -308,7 +353,7 @@ void Jeu::render(sf::RenderWindow& window) {
     window.draw(boutonLancerDe);
     window.draw(texteLancerDe);
     window.draw(texteActions);
-
+    window.draw(txt_pionJoueurActuel);
     window.display();
 }
 
@@ -326,7 +371,7 @@ void Jeu::setupPlateau() {
 void Jeu::generateParcours() {
     // Facteur d'agrandissement du plateau
     const float scaleFactor = 600.f / 225.f;
-    const float delta = 14.0f * scaleFactor;
+    const float delta = 13.5f * scaleFactor;
     const sf::Vector2f yellowStart(16.5f * scaleFactor, 98.5f * scaleFactor);
     const sf::Vector2f blueStart(16.5f * scaleFactor+ 8*delta, 98.5f * scaleFactor - 6 * delta);
     const sf::Vector2f redStart(16.5f * scaleFactor + 14 * delta, 98.5f * scaleFactor + 2 * delta);
