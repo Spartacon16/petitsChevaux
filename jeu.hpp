@@ -37,6 +37,7 @@ public:
     int trouverIndexCase(const sf::Vector2f& position);              // Trouver l'index d'une case
     void setPlayers(const std::vector<PlayerInfo>& playersSelected); // Définir les joueurs sélectionnés
     void run(sf::RenderWindow& window);   
+    
 private:                         
     void lancerDe() ;
     void handleEvents(sf::RenderWindow& window);                     // Gestion des événements
@@ -47,7 +48,7 @@ private:
     bool sortirPion(PionInfo& pion);                                 // Sortir un pion
     bool avancerPion(PionInfo& pion);                                // Avancer un pion
     void passerAuJoueurSuivant();                                    // Passer au joueur suivant
-
+    bool peutAvancerPion(PionInfo& pion);
     sf::RenderWindow& window; // Fenêtre de rendu
     bool isRunning;           // État du jeu
     int joueurActuel;         // Index du joueur actuel

@@ -142,38 +142,101 @@ void Jeu::handleEvents(sf::RenderWindow& window) {
         }
     }
 }
-// Gerer le clic sur un pion en autorisant une re-selection en cas d'erreur
-void Jeu::gererClicPion(const sf::Vector2f& mousePos) {
-    bool pionSelectionne = false;
+// // Gerer le clic sur un pion en autorisant une re-selection en cas d'erreur
+// void Jeu::gererClicPion(const sf::Vector2f& mousePos) {
+//     bool pionSelectionne = false;
 
+//     for (PionInfo& pion : playerPions[joueurActuel]) {
+//         if (pion.sprite.getGlobalBounds().contains(mousePos)) {
+//             if (valeurDe > 0 && pion.isOut) { 
+//                 // Si le pion est dejà sorti, tenter de l'avancer
+//                 if (avancerPion(pion)) { // AvancerPion retourne false si mouvement interdit
+//                     passerAuJoueurSuivant();
+//                 }
+//                 return;
+//             }
+
+//             if (valeurDe == 6 && !pion.isOut) { 
+//                 // Tenter de sortir le pion
+//                 if (sortirPion(pion)) { // SortirPion retourne false si sortie interdite
+//                     passerAuJoueurSuivant();
+//                 }
+//                 return;
+//             }
+
+//             pionSelectionne = true;
+//         }
+//     }
+
+//     // Permettre au joueur de re-cliquer si aucun pion valide n'a ete selectionne
+//     if (!pionSelectionne) {
+//         std::string message ="Joueur: " + playersInGame[joueurActuel].name + "\nSelec invalide. \nCliquez sur un \n-pion disponible\n ou -""ok"" .";
+//         std::cout << message << std::endl;
+//     }
+// }
+void Jeu::gererClicPion(const sf::Vector2f& mousePos) {
+    // Si le joueur n'a pas encore lancé le dé, on empêche de cliquer sur un pion
+    if (!diceRolled) {
+        std::string message = "Joueur: " + playersInGame[joueurActuel].name +                               
+                              "\nLancez le de \navant de jouer.";
+        texteActions.setString(message);
+        std::cout << message << std::endl;
+        return;
+    }
+
+    bool pionSelectionne = false;  
+    PionInfo* pionChoisi = nullptr; 
+
+    // Vérifier si un pion a été cliqué
     for (PionInfo& pion : playerPions[joueurActuel]) {
         if (pion.sprite.getGlobalBounds().contains(mousePos)) {
-            if (valeurDe > 0 && pion.isOut) { 
-                // Si le pion est dejà sorti, tenter de l'avancer
-                if (avancerPion(pion)) { // AvancerPion retourne false si mouvement interdit
-                    passerAuJoueurSuivant();
-                }
-                return;
-            }
-
-            if (valeurDe == 6 && !pion.isOut) { 
-                // Tenter de sortir le pion
-                if (sortirPion(pion)) { // SortirPion retourne false si sortie interdite
-                    passerAuJoueurSuivant();
-                }
-                return;
-            }
-
             pionSelectionne = true;
+            pionChoisi = &pion;
+            break;  // On arrête la boucle dès qu'un pion valide est trouvé
         }
     }
 
-    // Permettre au joueur de re-cliquer si aucun pion valide n'a ete selectionne
+    // Si aucun pion valide n'est sélectionné, afficher un message et permettre de re-choisir
     if (!pionSelectionne) {
-        std::string message ="Joueur: " + playersInGame[joueurActuel].name + "\nSelec invalide. \nCliquez sur un \n-pion disponible\n ou -""ok"" .";
+        std::string message = "Joueur: " + playersInGame[joueurActuel].name + 
+                              "\nDe: " + std::to_string(valeurDe) +
+                              "\nSelec invalide.\nCliquez sur un \npion valide.";
+        texteActions.setString(message);
+        std::cout << message << std::endl;
+        return;
+    }
+
+     // Vérifier si le pion sélectionné peut avancer
+    bool peutAvancer = peutAvancerPion(*pionChoisi);  
+
+    if (pionChoisi->isOut) {  
+        if (peutAvancer) {
+            if (avancerPion(*pionChoisi)) {  
+                passerAuJoueurSuivant();  
+            }
+        } else {
+            std::string message = "Joueur: " + playersInGame[joueurActuel].name + 
+                                  "\nDe: " + std::to_string(valeurDe) +
+                                  "\nCe pion est bloqué.\nChoisissez un autre pion.";
+            texteActions.setString(message);
+            std::cout << message << std::endl;
+        }
+    } 
+    else if (valeurDe == 6) {  
+        if (sortirPion(*pionChoisi)) { 
+            passerAuJoueurSuivant();
+        }
+    } 
+    else {
+        std::string message = "Joueur: " + playersInGame[joueurActuel].name + 
+                              "\nDe: " + std::to_string(valeurDe) +
+                              "\nCe pion ne peut \npas bouger.\nChoisissez un \nautre pion.";
+        texteActions.setString(message);
         std::cout << message << std::endl;
     }
 }
+
+
 
 
 // Lancer le de
@@ -194,31 +257,69 @@ void Jeu::lancerDe() {
     texteActions.setString(message);
     diceRolled = true; // Indiquer que le de a ete lance pour ce tour
 
-    if (valeurDe == 6 ) {
-        // Verifier si au moins un pion est dejà sorti
-        bool auMoinsUnPionSorti = std::any_of(playerPions[joueurActuel].begin(), playerPions[joueurActuel].end(), 
-                                            [](const PionInfo& pion) { return pion.isOut; });
+    // if (valeurDe == 6 ) {
+    //     // Verifier si au moins un pion est dejà sorti
+    //     bool auMoinsUnPionSorti = std::any_of(playerPions[joueurActuel].begin(), playerPions[joueurActuel].end(), 
+    //                                         [](const PionInfo& pion) { return pion.isOut; });
 
-            if (!auMoinsUnPionSorti) {
-        message += "\n=> Sortez un pion.";
-        } else {
-            message += "\n=> Sortez un pion \nou avancez.";
-        }
+    //         if (!auMoinsUnPionSorti) {
+    //     message += "\n=> Sortez un pion.";
+    //     } else {
+    //         message += "\n=> Sortez un pion \nou avancez.";
+    //     }
 
-            texteActions.setString(message);
+    //         texteActions.setString(message);
         
-    } else if (std::none_of(playerPions[joueurActuel].begin(), playerPions[joueurActuel].end(), [](const PionInfo& pion) { return pion.isOut; })) {
-        message += "\n=> Joueur suivant...";
+    // } else if (std::none_of(playerPions[joueurActuel].begin(), playerPions[joueurActuel].end(), [](const PionInfo& pion) { return pion.isOut; })) {
+    //     message += "\n=> Joueur suivant...";
+    //     texteActions.setString(message);
+    //     // Activer le mode "OK"
+    //     attenteValidation = true;
+    //     texteLancerDe.setString("OK");
+    //     return;
+    // } 
+    // else {
+    //     message += "\n=> Avancez un pion.";
+    //     texteActions.setString(message);
+    // }
+    bool auMoinsUnPionSorti = std::any_of(playerPions[joueurActuel].begin(), playerPions[joueurActuel].end(), 
+                                      [](const PionInfo& pion) { return pion.isOut; });
+   bool peutAvancer = false; // Initialisation en dehors de la boucle
+
+    for (PionInfo& pion : playerPions[joueurActuel]) {
+        if (peutAvancerPion(pion)) { 
+            peutAvancer = true; // Dès qu'un pion peut avancer, on met true
+            break; // Pas besoin de continuer la boucle
+        }
+    }
+    if (!auMoinsUnPionSorti && valeurDe == 6) {
+        message += "\n=> Sortez un pion.";
+    } else if (auMoinsUnPionSorti && valeurDe == 6) {
+        message += "\n=> Sortez un pion \nou avancez.";
+    } else if (auMoinsUnPionSorti && peutAvancer) {
+        message += "\n=> Avancez un pion.";
+    } else {
+        message += "\nPions bloques, \nPassez votre tour.";
         texteActions.setString(message);
-        // Activer le mode "OK"
         attenteValidation = true;
         texteLancerDe.setString("OK");
         return;
-    } 
-    else {
-        message += "\n=> Avancez un pion.";
-        texteActions.setString(message);
     }
+
+    texteActions.setString(message);
+    
+}
+bool Jeu::peutAvancerPion(PionInfo& pion) {
+    int caseActuelle = trouverIndexCase(pion.sprite.getPosition());
+    int nouvelleCase = (caseActuelle + valeurDe) % cases.size();
+
+    // Vérifier si la case cible est libre
+    for (const auto& autrePion : playerPions[joueurActuel]) {
+        if (&autrePion != &pion && autrePion.isOut && autrePion.sprite.getPosition() == cases[nouvelleCase].position) {
+            return false; // Case bloquée
+        }
+    }
+    return true; // Déplacement possible
 }
 bool Jeu::sortirPion(PionInfo& pion) {
     sf::Vector2f sortiePosition;
@@ -230,28 +331,15 @@ bool Jeu::sortirPion(PionInfo& pion) {
         default: return false;
     }
 
-    // Verifier si un pion de la même couleur est dejà sur la case de sortie
-    for (const PionInfo& autrePion : playerPions[joueurActuel]) {
-        if (&autrePion != &pion && autrePion.isOut && autrePion.sprite.getPosition() == sortiePosition) {
-            std::string message = "Joueur: " + playersInGame[joueurActuel].name + "\nSortie de prison \ndeja prise!";
-            texteActions.setString(message);
-            std::cout << message << std::endl;
-            return false; // Permet au joueur de re-choisir
-        }
-    }
-    // Verifier si un pion adverse est sur la nouvelle case ou a ete saute
-    for (auto& pionsJoueur : playerPions) {
-        for (auto& autrePion : pionsJoueur) {
-            int caseAutrePion = trouverIndexCase(autrePion.sprite.getPosition());
-            if (autrePion.isOut && &autrePion != &pion && 
-                (autrePion.sprite.getPosition() == pion.sprite.getPosition())) {
-                // Remettre le pion adverse dans sa prison
-                autrePion.sprite.setPosition(autrePion.startPosition);
-                autrePion.isOut = false;
-                std::cout << "Pion adverse renvoye à la prison: (" << autrePion.startPosition.x << ", " << autrePion.startPosition.y << ")" << std::endl;
-            }
-        }
-    }
+    // // Verifier si un pion de la même couleur est dejà sur la case de sortie
+    // for (const PionInfo& autrePion : playerPions[joueurActuel]) {
+    //     if (&autrePion != &pion && autrePion.isOut && autrePion.sprite.getPosition() == sortiePosition) {
+    //         std::string message = "Joueur: " + playersInGame[joueurActuel].name + "\nSortie de prison \ndeja prise!";
+    //         texteActions.setString(message);
+    //         std::cout << message << std::endl;
+    //         return false; // Permet au joueur de re-choisir
+    //     }
+    // }
     // Sortir le pion normalement
     pion.sprite.setPosition(sortiePosition);
     pion.isOut = true;
@@ -295,7 +383,7 @@ bool Jeu::avancerPion(PionInfo& pion) {
 
 
     // 📌 Verifier si le pion est dejà sur la case finale et doit attendre un 6
-    if (caseActuelle == caseAvantFinale ) {
+    if (caseActuelle == caseAvantFinale && pion.pionId == joueurActuel ) {
         if (valeurDe == 6) {
             // 🏆 Victoire !
             std::string message = "🎉 " + playersInGame[joueurActuel].name + " a gagne ! 🎉";
