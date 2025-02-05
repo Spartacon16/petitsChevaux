@@ -6,10 +6,10 @@
 #include <cmath>
 
 // Constructeur
-Jeu::Jeu(sf::RenderWindow& window, const sf::Font& font,
+Jeu::Jeu(sf::RenderWindow& window, const sf::Font& font, const int& nmbpion,
          const sf::Sound& clickSound, const sf::Sound& criSound,
          const sf::Sound& diceSound, const std::vector<sf::Sound>& gameboardSounds)
-    : window(window), font(font), isRunning(false), joueurActuel(0), valeurDe(0),
+    : window(window), font(font), isRunning(false), joueurActuel(0), valeurDe(0),nmbpion(4),
       clickSound(clickSound), criSound(criSound), diceSound(diceSound), gameboardSounds(gameboardSounds) {
     // Initialisation de la graine pour les nombres aleatoires
     std::srand(static_cast<unsigned>(std::time(nullptr)));
@@ -73,6 +73,7 @@ Jeu::Jeu(sf::RenderWindow& window, const sf::Font& font,
     texteActions.setFillColor(sf::Color::Black);
     texteActions.setPosition(610.f, 50.f);
     texteActions.setString("Joueur: J1\n=> Lancez le de");
+
     // Pion du joueur actuel (affiche à droite du texte des actions)
     txt_pionJoueurActuel.setTexture(pionTexture);
     txt_pionJoueurActuel.setOrigin(400.f, 400.f); // Centrer le sprite
@@ -94,7 +95,7 @@ void Jeu::setPlayers(const std::vector<PlayerInfo>& playersSelected) {
     for (size_t i = 0; i < playersInGame.size(); ++i) {
         std::vector<PionInfo> pionsJoueur; // 4 pions par joueur
 
-        for (int j = 0; j < 4; ++j) {
+        for (int j = 0; j < nmbpion; ++j) {
             PionInfo pion;
             pion.sprite.setTexture(pionTexture);
             pion.sprite.setOrigin(400.f, 400.f); // Centrer le sprite
@@ -108,6 +109,8 @@ void Jeu::setPlayers(const std::vector<PlayerInfo>& playersSelected) {
             };
             pion.sprite.setPosition(pion.startPosition);
             pion.isOut = false; // Initialisation des pions comme etant dans la prison
+            pion.pionId=i;   // id couleur du pion de jeu -1 si neutre, 0"Yellow",3"Blue",1"Red",2"Green"
+   
             pionsJoueur.push_back(pion);
         }
 
@@ -236,7 +239,19 @@ bool Jeu::sortirPion(PionInfo& pion) {
             return false; // Permet au joueur de re-choisir
         }
     }
-
+    // Verifier si un pion adverse est sur la nouvelle case ou a ete saute
+    for (auto& pionsJoueur : playerPions) {
+        for (auto& autrePion : pionsJoueur) {
+            int caseAutrePion = trouverIndexCase(autrePion.sprite.getPosition());
+            if (autrePion.isOut && &autrePion != &pion && 
+                (autrePion.sprite.getPosition() == pion.sprite.getPosition())) {
+                // Remettre le pion adverse dans sa prison
+                autrePion.sprite.setPosition(autrePion.startPosition);
+                autrePion.isOut = false;
+                std::cout << "Pion adverse renvoye à la prison: (" << autrePion.startPosition.x << ", " << autrePion.startPosition.y << ")" << std::endl;
+            }
+        }
+    }
     // Sortir le pion normalement
     pion.sprite.setPosition(sortiePosition);
     pion.isOut = true;
@@ -259,17 +274,17 @@ bool Jeu::avancerPion(PionInfo& pion) {
     sf::Vector2f positionActuelle = pion.sprite.getPosition();
     int caseActuelle = trouverIndexCase(positionActuelle);
     int nouvelleCase = (caseActuelle + valeurDe) % cases.size();
-    int caseFinale;
+    int caseAvantFinale;
     switch (joueurActuel) {
-        case 0: caseFinale = 55; break; // Jaune
-        case 1: caseFinale = 27; break; // Rouge
-        case 2: caseFinale = 41; break; // Vert
-        case 3: caseFinale = 13; break; // Bleu
+        case 0: caseAvantFinale = 55; break; // Jaune
+        case 1: caseAvantFinale = 27; break; // Rouge
+        case 2: caseAvantFinale = 41; break; // Vert
+        case 3: caseAvantFinale = 13; break; // Bleu
         default: return false;
     }
     // 📌 Empêcher d'avancer si la case depasse la case finale, mais autoriser d'atterrir dessus
-    if (caseActuelle < caseFinale && nouvelleCase > caseFinale ) {
-        nouvelleCase = caseFinale; // Forcer le pion à s'arrêter sur la case finale
+    if (caseActuelle < caseAvantFinale && nouvelleCase > caseAvantFinale ) {
+        nouvelleCase = caseAvantFinale; // Forcer le pion à s'arrêter sur la case finale
 
         std::string message = "Joueur: " + playersInGame[joueurActuel].name + 
                             "\nVous êtes arrive à votre case finale!";
@@ -280,7 +295,7 @@ bool Jeu::avancerPion(PionInfo& pion) {
 
 
     // 📌 Verifier si le pion est dejà sur la case finale et doit attendre un 6
-    if (caseActuelle == caseFinale) {
+    if (caseActuelle == caseAvantFinale ) {
         if (valeurDe == 6) {
             // 🏆 Victoire !
             std::string message = "🎉 " + playersInGame[joueurActuel].name + " a gagne ! 🎉";
@@ -346,6 +361,14 @@ bool Jeu::avancerPion(PionInfo& pion) {
 // Passer au joueur suivant
 void Jeu::passerAuJoueurSuivant() {
     if (!playersInGame.empty()) {
+        if(valeurDe==6){
+            valeurDe=0;
+            diceRolled=false;
+            std::string message = "Joueur: " + playersInGame[joueurActuel].name + "\n=> ReLancez le de";
+        texteActions.setString(message);
+        std::cout << message << std::endl;
+        return;
+        }
         joueurActuel = (joueurActuel + 1) % playersInGame.size();
         valeurDe = 0; // Reinitialiser le de
         diceRolled=false; // Reinitialiser le de lance
@@ -403,37 +426,37 @@ void Jeu::generateParcours() {
         } else if (i < 13) {
             cases.push_back({yellowStart + sf::Vector2f(6 * delta, -(i - 6) * delta), "Parcours", 0});
         } else {
-            cases.push_back({yellowStart + sf::Vector2f(7 * delta, -6 * delta), "AvantFinal", 1});
+            cases.push_back({yellowStart + sf::Vector2f(7 * delta, -6 * delta), "AvantFinal", 2});
         }
     }
     for (i = 0; i < 14; ++i){
         // 🔵 Cases Bleues +1 rouge
         if (i < 7) {
-            cases.push_back({blueStart + sf::Vector2f(0, i * delta), "Parcours", 1});
+            cases.push_back({blueStart + sf::Vector2f(0, i * delta), "Parcours", 3});
         } else if (i < 13) {
-            cases.push_back({blueStart + sf::Vector2f((i - 6) * delta, 6 * delta), "Parcours", 1});
+            cases.push_back({blueStart + sf::Vector2f((i - 6) * delta, 6 * delta), "Parcours", 3});
         } else {
-            cases.push_back({blueStart + sf::Vector2f(6 * delta, 7 * delta), "AvantFinal", 2});
+            cases.push_back({blueStart + sf::Vector2f(6 * delta, 7 * delta), "AvantFinal", 1});
         }
     }
     for (i = 0; i < 14; ++i){
 
         // 🔴 Cases Rouges +1 vert
         if (i < 7) {
-            cases.push_back({redStart + sf::Vector2f(-i * delta, 0), "Parcours", 2});
+            cases.push_back({redStart + sf::Vector2f(-i * delta, 0), "Parcours", 1});
         } else if (i < 13) {
-            cases.push_back({redStart + sf::Vector2f(-6 * delta, (i - 6) * delta), "Parcours", 2});
+            cases.push_back({redStart + sf::Vector2f(-6 * delta, (i - 6) * delta), "Parcours", 1});
         } else {
-            cases.push_back({redStart + sf::Vector2f(-7 * delta, 6 * delta), "AvantFinal", 3});
+            cases.push_back({redStart + sf::Vector2f(-7 * delta, 6 * delta), "AvantFinal", 2});
         }
     }
     for (i = 0; i < 14; ++i){
 
         // 🟢 Cases Vertes +1 jaune
         if (i < 7) {
-            cases.push_back({greenStart + sf::Vector2f(0, -i * delta), "Parcours", 3});
+            cases.push_back({greenStart + sf::Vector2f(0, -i * delta), "Parcours", 2});
         } else if (i < 13) {
-            cases.push_back({greenStart + sf::Vector2f(-(i - 6) * delta,- 6 * delta), "Parcours", 3});
+            cases.push_back({greenStart + sf::Vector2f(-(i - 6) * delta,- 6 * delta), "Parcours", 2});
         } else {
             cases.push_back({greenStart + sf::Vector2f(-6 * delta, -7 * delta), "AvantFinal", 0});
         }
@@ -452,10 +475,10 @@ void Jeu::generateParcours() {
         cases.push_back({redStart + sf::Vector2f(-7 * delta, 6 * delta)+ sf::Vector2f(0,delta), "Final", 3,i+1});
     }  
     
-    // Ajouter la case "Victoire" au centre
-    for (int j=0;j<3;++j){
-    cases.emplace_back(sf::Vector2f(300.f, 300.f), "Victoire",j);
-    }
+    // // Ajouter la case "Victoire" au centre
+    // for (int j=0;j<3;++j){
+    // cases.emplace_back(sf::Vector2f(300.f, 300.f), "Victoire",j);
+    // }
 }
 
 // Lancer la boucle du jeu

@@ -12,22 +12,24 @@ struct PionInfo {
     sf::Sprite sprite;        // Sprite pour chaque pion
     sf::Vector2f startPosition; // Position de départ
     bool isOut;               // Indique si le pion est sorti de la prison
+    int pionId;   // Id de la couleur du pion de jeu -1 si neutre, // couleur de la case de jeu -1 si neutre, 0"Yellow",3"Blue",1"Red",2"Green"
+   
 };
 
 // Structure pour une case
 struct Case {
     sf::Vector2f position;    // Position graphique en pixels
     std::string type;         // Type de case : "Prison", "Parcours", "Finale", "Victoire","AvantFinal"
-    int playerId;   // couleur de la case de jeu -1 si neutre, 0"Yellow",1"Blue",2"Red",3"Green"
+    int caseId;   // couleur de la case de jeu -1 si neutre, // couleur de la case de jeu -1 si neutre, 0"Yellow",3"Blue",1"Red",2"Green"
     int finalStep;            // Étape finale (1-6), 0 si non applicable, 7 si gagné
 
     Case(sf::Vector2f pos, const std::string& t, int id = -1, int step = 0)
-        : position(pos), type(t), playerId(id), finalStep(step) {}
+        : position(pos), type(t), caseId(id), finalStep(step) {}
 };
 
 class Jeu {
 public:
-    Jeu(sf::RenderWindow& window, const sf::Font& font,
+    Jeu(sf::RenderWindow& window, const sf::Font& font,const int& nmbpion,
         const sf::Sound& clickSound, const sf::Sound& criSound,
         const sf::Sound& diceSound, const std::vector<sf::Sound>& gameboardSounds);
                                    // Générer les cases de parcours
@@ -53,7 +55,7 @@ private:
     float pionScale;           // Échelle des pions
     bool diceRolled;          // Indique si le dé a été lancé
     bool attenteValidation; // Indique si on attend une validation (bouton "OK")
-
+    int nmbpion;            // Indique le nombres de pion dans le jeu
     // Textures et éléments graphiques
     sf::Texture plateauTexture;
     sf::Sprite plateauSprite;

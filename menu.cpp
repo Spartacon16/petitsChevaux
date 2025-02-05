@@ -87,6 +87,7 @@ Menu::Menu(sf::RenderWindow& window)
     Xbutton.setOrigin(circlerayon, circlerayon); // centre au milieu
     Xbutton.setFillColor(sf::Color::Red);
 
+
     // Bouton + (ajouter joueur)
     plusButton.setSize(sf::Vector2f(50.f, 50.f));
     plusButton.setFillColor(sf::Color::Transparent);
@@ -138,12 +139,13 @@ Menu::Menu(sf::RenderWindow& window)
         startText.getPosition().x - 2,
         startText.getPosition().y - 2
     );
-
+    nmbpion=4;
     // Charger les sons
     loadSound("../bruits");
     // Charger la texture du pion
     loadTextures();
     initPlayers();
+    
 }
 
 void Menu::loadSound(const std::string& soundPath) {

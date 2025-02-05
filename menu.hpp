@@ -49,6 +49,8 @@ public:
     sf::Texture backgroundTexture;
     sf::Sprite backgroundSprite;
 
+    int nmbpion;            // Indique le nombres de pion dans le jeu
+   
 private:
     // Fonctions internes
     void loadSound(const std::string& soundPath);
