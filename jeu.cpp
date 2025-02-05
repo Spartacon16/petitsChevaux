@@ -34,10 +34,10 @@ Jeu::Jeu(sf::RenderWindow& window, const sf::Font& font,
     // Taille d'un carreau
     const float carreauPx = 50.f;
 
-    // Calcul de l'échelle pour ajuster le pion à un carreau
+    // Calcul de l'echelle pour ajuster le pion à un carreau
     pionScale = carreauPx / 800.f; // 800 px correspond à la taille de l'image Pion.png
 
-    // Positions de départ pour chaque joueur (zones de départ, en carré)
+    // Positions de depart pour chaque joueur (zones de depart, en carre)
     startingPositions = {
         {100.f, 100.f}, // Jaune
         {450.f, 450.f}, // Rouge
@@ -73,10 +73,10 @@ Jeu::Jeu(sf::RenderWindow& window, const sf::Font& font,
     texteActions.setFillColor(sf::Color::Black);
     texteActions.setPosition(610.f, 50.f);
     texteActions.setString("Joueur: J1\n=> Lancez le de");
-    // Pion du joueur actuel (affiché à droite du texte des actions)
+    // Pion du joueur actuel (affiche à droite du texte des actions)
     txt_pionJoueurActuel.setTexture(pionTexture);
     txt_pionJoueurActuel.setOrigin(400.f, 400.f); // Centrer le sprite
-    txt_pionJoueurActuel.setScale(pionScale, pionScale); // Même échelle que les autres pions
+    txt_pionJoueurActuel.setScale(pionScale, pionScale); // Même echelle que les autres pions
     txt_pionJoueurActuel.setColor(playerColors[joueurActuel]); // Couleur du premier joueur
     txt_pionJoueurActuel.setPosition(texteActions.getPosition().x + 150.f, texteActions.getPosition().y - 10.f);
 
@@ -107,7 +107,7 @@ void Jeu::setPlayers(const std::vector<PlayerInfo>& playersSelected) {
                 startingPositions[i].y + (j / 2) * 50.f
             };
             pion.sprite.setPosition(pion.startPosition);
-            pion.isOut = false; // Initialisation des pions comme étant dans la prison
+            pion.isOut = false; // Initialisation des pions comme etant dans la prison
             pionsJoueur.push_back(pion);
         }
 
@@ -115,7 +115,7 @@ void Jeu::setPlayers(const std::vector<PlayerInfo>& playersSelected) {
     }
 }
 
-// Gérer les événements
+// Gerer les evenements
 void Jeu::handleEvents(sf::RenderWindow& window) {
     sf::Event event;
     while (window.pollEvent(event)) {
@@ -126,7 +126,7 @@ void Jeu::handleEvents(sf::RenderWindow& window) {
             sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
             if (boutonLancerDe.getGlobalBounds().contains(mousePos)) {
                 if (attenteValidation) {
-                    // Désactiver "OK" et passer au joueur suivant
+                    // Desactiver "OK" et passer au joueur suivant
                     attenteValidation = false;
                     texteLancerDe.setString("Lancer le de");
                     passerAuJoueurSuivant();
@@ -139,33 +139,48 @@ void Jeu::handleEvents(sf::RenderWindow& window) {
         }
     }
 }
-
-// Gérer le clic sur un pion
+// Gerer le clic sur un pion en autorisant une re-selection en cas d'erreur
 void Jeu::gererClicPion(const sf::Vector2f& mousePos) {
+    bool pionSelectionne = false;
+
     for (PionInfo& pion : playerPions[joueurActuel]) {
         if (pion.sprite.getGlobalBounds().contains(mousePos)) {
-            if (valeurDe > 0 && pion.isOut) { // Déplacement si le pion est déjà sorti
-                avancerPion(pion);
-                passerAuJoueurSuivant();
+            if (valeurDe > 0 && pion.isOut) { 
+                // Si le pion est dejà sorti, tenter de l'avancer
+                if (avancerPion(pion)) { // AvancerPion retourne false si mouvement interdit
+                    passerAuJoueurSuivant();
+                }
                 return;
             }
-            if (valeurDe == 6 && !pion.isOut) { // Sortir un pion si on fait 6
-                sortirPion(pion);
-                passerAuJoueurSuivant();
+
+            if (valeurDe == 6 && !pion.isOut) { 
+                // Tenter de sortir le pion
+                if (sortirPion(pion)) { // SortirPion retourne false si sortie interdite
+                    passerAuJoueurSuivant();
+                }
                 return;
             }
+
+            pionSelectionne = true;
         }
+    }
+
+    // Permettre au joueur de re-cliquer si aucun pion valide n'a ete selectionne
+    if (!pionSelectionne) {
+        std::string message ="Joueur: " + playersInGame[joueurActuel].name + "\nSelec invalide. \nCliquez sur un \n-pion disponible\n ou -""ok"" .";
+        std::cout << message << std::endl;
     }
 }
 
-// Lancer le dé
+
+// Lancer le de
 void Jeu::lancerDe() {
-    // Jouer le son du dé
+    // Jouer le son du de
     diceSound.play();
     valeurDe = rand() % 6 + 1;
     std::string message = "Joueur: " + playersInGame[joueurActuel].name + "\nDe: " + std::to_string(valeurDe);
     std::cout << "Valeur du de: " << valeurDe << std::endl;
-    // Ajouter la couleur du pion à côté du nom du joueur
+    // Ajouter la couleur du pion à côte du nom du joueur
     sf::Text playerName;
     playerName.setFont(font);
     playerName.setString(playersInGame[joueurActuel].name);
@@ -174,16 +189,20 @@ void Jeu::lancerDe() {
     playerName.setPosition(texteActions.getPosition().x, texteActions.getPosition().y + 30);
 
     texteActions.setString(message);
-    diceRolled = true; // Indiquer que le dé a été lancé pour ce tour
+    diceRolled = true; // Indiquer que le de a ete lance pour ce tour
 
-    if (valeurDe == 6 && std::none_of(playerPions[joueurActuel].begin(), playerPions[joueurActuel].end(), [](const PionInfo& pion) { return pion.isOut; })) {
-        if (std::any_of(playerPions[joueurActuel].begin(), playerPions[joueurActuel].end(), [](const PionInfo& pion) { return !pion.isOut; })) {
-            message += "\n=> Sortez un pion.";
-            texteActions.setString(message);
+    if (valeurDe == 6 ) {
+        // Verifier si au moins un pion est dejà sorti
+        bool auMoinsUnPionSorti = std::any_of(playerPions[joueurActuel].begin(), playerPions[joueurActuel].end(), 
+                                            [](const PionInfo& pion) { return pion.isOut; });
+
+            if (!auMoinsUnPionSorti) {
+        message += "\n=> Sortez un pion.";
         } else {
             message += "\n=> Sortez un pion \nou avancez.";
-            texteActions.setString(message);
         }
+
+            texteActions.setString(message);
         
     } else if (std::none_of(playerPions[joueurActuel].begin(), playerPions[joueurActuel].end(), [](const PionInfo& pion) { return pion.isOut; })) {
         message += "\n=> Joueur suivant...";
@@ -198,44 +217,44 @@ void Jeu::lancerDe() {
         texteActions.setString(message);
     }
 }
+bool Jeu::sortirPion(PionInfo& pion) {
+    sf::Vector2f sortiePosition;
+    switch (joueurActuel) {
+        case 0: sortiePosition = getCasePosition(0, joueurActuel); break;
+        case 1: sortiePosition = getCasePosition(28, joueurActuel); break;
+        case 2: sortiePosition = getCasePosition(42, joueurActuel); break;
+        case 3: sortiePosition = getCasePosition(14, joueurActuel); break;
+        default: return false;
+    }
 
-// Sortir un pion
-void Jeu::sortirPion(PionInfo& pion) {
-     // Vérifier si un pion de la même couleur est déjà sur la case cible
-    int nouvelleCase = (valeurDe) % cases.size();
+    // Verifier si un pion de la même couleur est dejà sur la case de sortie
     for (const PionInfo& autrePion : playerPions[joueurActuel]) {
-        if (&autrePion != &pion && autrePion.isOut && autrePion.sprite.getPosition() == cases[nouvelleCase].position) {
-            // Empêcher le déplacement
-            std::string message = "Joueur: " + playersInGame[joueurActuel].name + "\nImpossible de passer\n meme couleur!";
+        if (&autrePion != &pion && autrePion.isOut && autrePion.sprite.getPosition() == sortiePosition) {
+            std::string message = "Joueur: " + playersInGame[joueurActuel].name + "\nSortie de prison \ndeja prise!";
             texteActions.setString(message);
             std::cout << message << std::endl;
-            return; // Bloquer le mouvement
+            return false; // Permet au joueur de re-choisir
         }
     }
-    if (joueurActuel == 0) {
-        pion.sprite.setPosition(getCasePosition(0, joueurActuel)); // Yellow start
-    } else if (joueurActuel == 3) {
-        pion.sprite.setPosition(getCasePosition(14, joueurActuel)); // Blue start
-    } else if (joueurActuel == 1) {
-        pion.sprite.setPosition(getCasePosition(28, joueurActuel)); // Red start
-    } else if (joueurActuel == 2) {
-        pion.sprite.setPosition(getCasePosition(42, joueurActuel)); // Green start
-    }
+
+    // Sortir le pion normalement
+    pion.sprite.setPosition(sortiePosition);
     pion.isOut = true;
 
-   
-    // Jouer un son de plateau aléatoire
+    // Jouer un son pour la sortie
     int sonIndex = rand() % gameboardSounds.size();
+    gameboardSounds[sonIndex].setVolume(300.f);
     gameboardSounds[sonIndex].play();
 
-    std::string message = "Joueur: " + playersInGame[joueurActuel].name + "\nPion sorti !";
-    texteActions.setString(message);   
-    // Log the position to the console
-    std::cout << "Pion sorti à la position: (" << pion.startPosition.x << ", " << pion.startPosition.y << ")" << std::endl;
+    std::string message = "Joueur: " + playersInGame[joueurActuel].name + "\nPion sorti!";
+    texteActions.setString(message);
+
+    return true;
 }
 
+
 // Avancer un pion
-void Jeu::avancerPion(PionInfo& pion) {
+bool Jeu::avancerPion(PionInfo& pion) {
     // Trouver la position actuelle du pion
     sf::Vector2f positionActuelle = pion.sprite.getPosition();
     int caseActuelle = trouverIndexCase(positionActuelle);
@@ -246,23 +265,25 @@ void Jeu::avancerPion(PionInfo& pion) {
         case 1: caseFinale = 27; break; // Rouge
         case 2: caseFinale = 41; break; // Vert
         case 3: caseFinale = 13; break; // Bleu
-        default: caseFinale = -1; break;
+        default: return false;
     }
-    // 📌 Empêcher d'avancer si la case dépasse la case finale
-    if (caseActuelle < caseFinale && nouvelleCase > caseFinale) {
+    // 📌 Empêcher d'avancer si la case depasse la case finale, mais autoriser d'atterrir dessus
+    if (caseActuelle < caseFinale && nouvelleCase > caseFinale ) {
+        nouvelleCase = caseFinale; // Forcer le pion à s'arrêter sur la case finale
+
         std::string message = "Joueur: " + playersInGame[joueurActuel].name + 
-                              "\nVous ne pouvez pas dépasser votre case finale.";
+                            "\nVous êtes arrive à votre case finale!";
         texteActions.setString(message);
         std::cout << message << std::endl;
-        return;
+        return false; // Permet au joueur de re-choisir
     }
-    // 📌 Vérifier si le pion est déjà sur la case finale et doit attendre un 6
-    
 
+
+    // 📌 Verifier si le pion est dejà sur la case finale et doit attendre un 6
     if (caseActuelle == caseFinale) {
         if (valeurDe == 6) {
             // 🏆 Victoire !
-            std::string message = "🎉 " + playersInGame[joueurActuel].name + " a gagné ! 🎉";
+            std::string message = "🎉 " + playersInGame[joueurActuel].name + " a gagne ! 🎉";
             texteActions.setString(message);
             std::cout << message << std::endl;
             isRunning = false; // Fin du jeu
@@ -273,19 +294,19 @@ void Jeu::avancerPion(PionInfo& pion) {
             texteActions.setString(message);
             std::cout << message << std::endl;
         }
-        return;
+        return true;
     }
-    // Vérifier si un pion de la même couleur est déjà sur la case cible
+    // Verifier si un pion de la même couleur est dejà sur la case cible
     for (const PionInfo& autrePion : playerPions[joueurActuel]) {
         if (&autrePion != &pion && autrePion.isOut && autrePion.sprite.getPosition() == cases[nouvelleCase].position) {
-            // Empêcher le déplacement
+            // Empêcher le deplacement
             std::string message = "Joueur: " + playersInGame[joueurActuel].name + "\nImpossible de passer\n meme couleur!";
             texteActions.setString(message);
             std::cout << message << std::endl;
-            return; // Bloquer le mouvement
+            return false; // Bloquer le mouvement
         }
     }
-    // Animation du déplacement du pion
+    // Animation du deplacement du pion
     sf::Vector2f startPosition = pion.sprite.getPosition();
     sf::Vector2f endPosition = cases[nouvelleCase].position;
     sf::Clock clock;
@@ -296,16 +317,16 @@ void Jeu::avancerPion(PionInfo& pion) {
     }
     pion.sprite.setPosition(endPosition);
 
-    // Jouer un son de plateau aléatoire
+    // Jouer un son de plateau aleatoire
     int sonIndex = rand() % gameboardSounds.size();
     gameboardSounds[sonIndex].setVolume(300.f);
     gameboardSounds[sonIndex].play();
 
     std::string message = "Joueur: " + playersInGame[joueurActuel].name + "\nPion avance !";
     texteActions.setString(message);// Log the new position to the console
-    std::cout << "Pion avancé à la position: (" << cases[nouvelleCase].position.x << ", " << cases[nouvelleCase].position.y << ")" << std::endl;
+    std::cout << "Pion avance à la position: (" << cases[nouvelleCase].position.x << ", " << cases[nouvelleCase].position.y << ")" << std::endl;
 
-    // Vérifier si un pion adverse est sur la nouvelle case ou a été sauté
+    // Verifier si un pion adverse est sur la nouvelle case ou a ete saute
     for (auto& pionsJoueur : playerPions) {
         for (auto& autrePion : pionsJoueur) {
             int caseAutrePion = trouverIndexCase(autrePion.sprite.getPosition());
@@ -315,18 +336,19 @@ void Jeu::avancerPion(PionInfo& pion) {
                 // Remettre le pion adverse dans sa prison
                 autrePion.sprite.setPosition(autrePion.startPosition);
                 autrePion.isOut = false;
-                std::cout << "Pion adverse renvoyé à la prison: (" << autrePion.startPosition.x << ", " << autrePion.startPosition.y << ")" << std::endl;
+                std::cout << "Pion adverse renvoye à la prison: (" << autrePion.startPosition.x << ", " << autrePion.startPosition.y << ")" << std::endl;
             }
         }
     }
+    return true;
 }
 
 // Passer au joueur suivant
 void Jeu::passerAuJoueurSuivant() {
     if (!playersInGame.empty()) {
         joueurActuel = (joueurActuel + 1) % playersInGame.size();
-        valeurDe = 0; // Réinitialiser le dé
-        diceRolled=false; // Réinitialiser le dé lancé
+        valeurDe = 0; // Reinitialiser le de
+        diceRolled=false; // Reinitialiser le de lance
         std::string message = "Joueur: " + playersInGame[joueurActuel].name + "\n=> Lancez le de";
         texteActions.setString(message);
         std::cout << message << std::endl;
@@ -360,11 +382,6 @@ void Jeu::render(sf::RenderWindow& window) {
 // Configurer le plateau
 void Jeu::setupPlateau() {
     generateParcours();
-    // Ajouter la case "Victoire" au centre
-    cases.emplace_back(sf::Vector2f(300.f, 300.f), "Victoire",0);
-    cases.emplace_back(sf::Vector2f(300.f, 300.f), "Victoire",1);
-    cases.emplace_back(sf::Vector2f(300.f, 300.f), "Victoire",2);
-    cases.emplace_back(sf::Vector2f(300.f, 300.f), "Victoire",3);
 }
 
 // Generer les cases du parcours
@@ -386,7 +403,7 @@ void Jeu::generateParcours() {
         } else if (i < 13) {
             cases.push_back({yellowStart + sf::Vector2f(6 * delta, -(i - 6) * delta), "Parcours", 0});
         } else {
-            cases.push_back({yellowStart + sf::Vector2f(7 * delta, -6 * delta), "Parcours", 1});
+            cases.push_back({yellowStart + sf::Vector2f(7 * delta, -6 * delta), "AvantFinal", 1});
         }
     }
     for (i = 0; i < 14; ++i){
@@ -396,7 +413,7 @@ void Jeu::generateParcours() {
         } else if (i < 13) {
             cases.push_back({blueStart + sf::Vector2f((i - 6) * delta, 6 * delta), "Parcours", 1});
         } else {
-            cases.push_back({blueStart + sf::Vector2f(6 * delta, 7 * delta), "Parcours", 2});
+            cases.push_back({blueStart + sf::Vector2f(6 * delta, 7 * delta), "AvantFinal", 2});
         }
     }
     for (i = 0; i < 14; ++i){
@@ -407,7 +424,7 @@ void Jeu::generateParcours() {
         } else if (i < 13) {
             cases.push_back({redStart + sf::Vector2f(-6 * delta, (i - 6) * delta), "Parcours", 2});
         } else {
-            cases.push_back({redStart + sf::Vector2f(-7 * delta, 6 * delta), "Parcours", 3});
+            cases.push_back({redStart + sf::Vector2f(-7 * delta, 6 * delta), "AvantFinal", 3});
         }
     }
     for (i = 0; i < 14; ++i){
@@ -418,8 +435,26 @@ void Jeu::generateParcours() {
         } else if (i < 13) {
             cases.push_back({greenStart + sf::Vector2f(-(i - 6) * delta,- 6 * delta), "Parcours", 3});
         } else {
-            cases.push_back({greenStart + sf::Vector2f(-6 * delta, -7 * delta), "Parcours", 0});
+            cases.push_back({greenStart + sf::Vector2f(-6 * delta, -7 * delta), "AvantFinal", 0});
         }
+    }
+    // Ajouter les 6 cases "Finale" avant "Victoire" 
+    for (i = 0; i < 6; ++i){
+        cases.push_back({greenStart + sf::Vector2f(-6 * delta, -7 * delta)+ sf::Vector2f(delta,0), "Final", 0,i+1});
+    } 
+    for (i = 0; i < 6; ++i){
+        cases.push_back({yellowStart + sf::Vector2f(7 * delta, -6 * delta)+ sf::Vector2f(0,-delta), "Final", 1,i+1});
+    } 
+    for (i = 0; i < 6; ++i){
+        cases.push_back({blueStart + sf::Vector2f(6 * delta, 7 * delta)+ sf::Vector2f(-delta,0), "Final", 2,i+1});
+    } 
+     for (i = 0; i < 6; ++i){
+        cases.push_back({redStart + sf::Vector2f(-7 * delta, 6 * delta)+ sf::Vector2f(0,delta), "Final", 3,i+1});
+    }  
+    
+    // Ajouter la case "Victoire" au centre
+    for (int j=0;j<3;++j){
+    cases.emplace_back(sf::Vector2f(300.f, 300.f), "Victoire",j);
     }
 }
 
@@ -436,7 +471,7 @@ void Jeu::run(sf::RenderWindow& window) {
 
 // Mettre à jour la logique du jeu (placeholder pour futur ajout)
 void Jeu::update() {
-    // Ici, ajoutez les règles du jeu ou la logique de déplacement
+    // Ici, ajoutez les règles du jeu ou la logique de deplacement
 }
 
 sf::Vector2f Jeu::getCasePosition(int caseIndex, int joueur) {

@@ -17,9 +17,9 @@ struct PionInfo {
 // Structure pour une case
 struct Case {
     sf::Vector2f position;    // Position graphique en pixels
-    std::string type;         // Type de case : "Prison", "Parcours", "Finale", "Victoire"
-    int playerId;             // ID du joueur (0-3 pour 4 joueurs), -1 si neutre
-    int finalStep;            // Étape finale (1-6), 0 si non applicable
+    std::string type;         // Type de case : "Prison", "Parcours", "Finale", "Victoire","AvantFinal"
+    int playerId;   // couleur de la case de jeu -1 si neutre, 0"Yellow",1"Blue",2"Red",3"Green"
+    int finalStep;            // Étape finale (1-6), 0 si non applicable, 7 si gagné
 
     Case(sf::Vector2f pos, const std::string& t, int id = -1, int step = 0)
         : position(pos), type(t), playerId(id), finalStep(step) {}
@@ -42,8 +42,8 @@ private:
     void render(sf::RenderWindow& window);                           // Rendu graphique
     void setupPlateau();                                             // Configurer le plateau
     void generateParcours();      void gererClicPion(const sf::Vector2f& mousePos);                // Gérer le clic sur un pion
-    void sortirPion(PionInfo& pion);                                 // Sortir un pion
-    void avancerPion(PionInfo& pion);                                // Avancer un pion
+    bool sortirPion(PionInfo& pion);                                 // Sortir un pion
+    bool avancerPion(PionInfo& pion);                                // Avancer un pion
     void passerAuJoueurSuivant();                                    // Passer au joueur suivant
 
     sf::RenderWindow& window; // Fenêtre de rendu
