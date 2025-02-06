@@ -294,6 +294,13 @@ bool Jeu::peutAvancerPion(PionInfo& pion) {
   // ✅ Gestion du depassement de 55 pour revenir a 0 correctement
     if (caseActuelle <= 55 && nouvelleCase > 55 ) {
         nouvelleCase = (nouvelleCase - 56); // On revient a 0 et on continue
+    } 
+    if (cases[caseActuelle].type == "Final") {
+        int finalStep = cases[caseActuelle].finalStep; // Étape actuelle en zone finale
+        int nouvelleStep = finalStep + 1; // Étape cible
+        if (valeurDe < nouvelleStep){
+        return false; // Ne peut pas avancer
+        }
     }
     // Verifier si la case cible est libre
      for (auto& pionsJoueur : playerPions) {
@@ -353,9 +360,9 @@ bool Jeu::avancerPion(PionInfo& pion) {
     bool depasseavantfinalejaune=false;
     switch (joueurActuel) {
         case 0: caseAvantFinale = 55; caseFinalStart = 56; break; // Jaune
-        case 1: caseAvantFinale = 27; caseFinalStart = 62; break; // Rouge
-        case 2: caseAvantFinale = 41; caseFinalStart = 68; break; // Vert
-        case 3: caseAvantFinale = 13; caseFinalStart = 74; break; // Bleu
+        case 1: caseAvantFinale = 27; caseFinalStart =68 ; break; // Rouge
+        case 2: caseAvantFinale = 41; caseFinalStart =78 ; break; // Vert
+        case 3: caseAvantFinale = 13; caseFinalStart =62 ; break; // Bleu
         default: return false;
     }
      // ✅ Empecher d'aller au-dela de la case avant finale sauf si en zone finale
@@ -441,7 +448,7 @@ bool Jeu::avancerPion(PionInfo& pion) {
         } else {
             std::string message = "Joueur: " + playersInGame[joueurActuel].name + 
                                   "\nDe: " + std::to_string(valeurDe) +
-                                  "\nVous devez faire 1 pour entrer \ndans la zone finale!";
+                                  "\nVous devez \nfaire 1 ou \nplus pour \nentrer dans la \nzone finale!";
             texteActions.setString(message);
             std::cout << message << std::endl;
             return false; // Ne peut pas avancer
@@ -449,21 +456,24 @@ bool Jeu::avancerPion(PionInfo& pion) {
     }
 
    
-    // ✅ Cas 2 : Si le pion est deja en zone finale, il doit avancer de "FinalStep" exact
+    // ✅ Cas 2 : Si le pion est déjà en zone finale, il doit avancer d'exactement une case
     if (cases[caseActuelle].type == "Final") {
-        int finalStep = cases[caseActuelle].finalStep;
-        if (valeurDe >= (finalStep + 1)) { 
-            nouvelleCase = caseFinalStart + finalStep; // Aller au bon "FinalStep"
+        int finalStep = cases[caseActuelle].finalStep; // Étape actuelle en zone finale
+        int nouvelleStep = finalStep + 1; // Étape cible
+
+        if (valeurDe >= nouvelleStep) { 
+            nouvelleCase = caseFinalStart + finalStep; // Déplacer d'une seule case vers l'avant
         } else {
             std::string message = "Joueur: " + playersInGame[joueurActuel].name + 
-                                  "\nDe: " + std::to_string(valeurDe) +
-                                  "\nVous devez \nfaire " + std::to_string(finalStep + 1) + 
-                                  " \npour avancer !";
+                                "\nDe: " + std::to_string(valeurDe) +
+                                "\nVous devez faire " + std::to_string(nouvelleStep) + 
+                                " ou plus pour avancer !";
             texteActions.setString(message);
             std::cout << message << std::endl;
             return false; // Ne peut pas avancer
         }
     }
+
 
     // ✅ Vérification des collisions avec un pion de la meme couleur
     for (auto& pionsJoueur : playerPions) {
@@ -612,16 +622,16 @@ void Jeu::generateParcours() {
     }
     // Ajouter les 6 cases "Finale" avant "Victoire" 
     for (i = 0; i < 6; ++i){
-        cases.push_back({greenStart + sf::Vector2f(-6 * delta, -7 * delta)+ sf::Vector2f(delta,0), "Final", 0,i+1});
+        cases.push_back({greenStart + sf::Vector2f(-6 * delta, -7 * delta)+ sf::Vector2f(delta,0), "Final", 0,i+1}); //yellow final
     } 
     for (i = 0; i < 6; ++i){
-        cases.push_back({yellowStart + sf::Vector2f(7 * delta, -6 * delta)+ sf::Vector2f(0,-delta), "Final", 1,i+1});
+        cases.push_back({yellowStart + sf::Vector2f(7 * delta, -6 * delta)+ sf::Vector2f(0,delta), "Final", 3,i+1}); //blue final
     } 
     for (i = 0; i < 6; ++i){
-        cases.push_back({blueStart + sf::Vector2f(6 * delta, 7 * delta)+ sf::Vector2f(-delta,0), "Final", 2,i+1});
+        cases.push_back({blueStart + sf::Vector2f(6 * delta, 7 * delta)+ sf::Vector2f(-delta,0), "Final", 1,i+1}); //red final
     } 
      for (i = 0; i < 6; ++i){
-        cases.push_back({redStart + sf::Vector2f(-7 * delta, 6 * delta)+ sf::Vector2f(0,delta), "Final", 3,i+1});
+        cases.push_back({redStart + sf::Vector2f(-7 * delta, 6 * delta)+ sf::Vector2f(0,-delta), "Final", 2,i+1});//green final
     }  
     
     // // Ajouter la case "Victoire" au centre
