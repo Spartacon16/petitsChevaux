@@ -9,7 +9,7 @@ int main()
     // Lance la musique en fond (dossier ../musique ambiance)
     std::string folderPath = "../musique ambiance";
     std::thread musicThread(playMusicFromFolder, folderPath);
-    musicThread.detach(); // pour que le thread tourne en arrière-plan
+    musicThread.detach(); // pour que le thread tourne en arriere-plan
 
     sf::RenderWindow window(sf::VideoMode(800, 600), "Petits Chevaux");
     window.setFramerateLimit(60);
@@ -22,7 +22,7 @@ int main()
     // Boucle principale
     while (window.isOpen())
     {
-        // Tant que le menu n'a pas switché en mode "GAME_RUNNING", on affiche le menu :
+        // Tant que le menu n'a pas switche en mode "GAME_RUNNING", on affiche le menu :
         if (menu.getCurrentState() != GAME_RUNNING)
         {
             menu.handleEvents(window);
@@ -30,13 +30,13 @@ int main()
             menu.render(window);
 
             // Si l'utilisateur vient de cliquer sur "Start" en PLAYER_SELECTION,
-            // le menu passera l'état à GAME_RUNNING
+            // le menu passera l'etat a GAME_RUNNING
         }
         else
         { 
-            // On récupère la liste des joueurs choisis
+            // On recupere la liste des joueurs choisis
             auto& playersSelected = menu.getPlayers();
-            // On transmet ces joueurs à la classe Jeu
+            // On transmet ces joueurs a la classe Jeu
             jeu.setPlayers(playersSelected);
             // Lancement du jeu
             jeu.run(window);

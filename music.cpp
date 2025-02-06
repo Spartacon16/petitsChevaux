@@ -12,19 +12,19 @@ void playMusicFromFolder(const std::string& folderPath) {
     }
 
     if (musicFiles.empty()) {
-        std::cerr << "Aucun fichier audio trouvé dans le dossier." << std::endl;
+        std::cerr << "Aucun fichier audio trouve dans le dossier." << std::endl;
         return;
     }
 
-    // Initialiser le générateur de nombres aléatoires
+    // Initialiser le generateur de nombres aleatoires
     std::srand(static_cast<unsigned>(std::time(nullptr)));
 
     while (true) {
-        // Choisir un fichier aléatoire à chaque fois
+        // Choisir un fichier aleatoire a chaque fois
         int randomIndex = std::rand() % musicFiles.size();
         std::string selectedMusic = musicFiles[randomIndex];
 
-        std::cout << "Musique sélectionnée : " << selectedMusic << std::endl;
+        std::cout << "Musique selectionnee : " << selectedMusic << std::endl;
 
         sf::Music music;
         if (music.openFromFile(selectedMusic)) {
@@ -37,7 +37,7 @@ void playMusicFromFolder(const std::string& folderPath) {
             std::cerr << "Impossible de lire le fichier : " << selectedMusic << std::endl;
         }
 
-        // Attendre un certain temps avant de jouer à nouveau une musique pour éviter une répétition rapide
-        sf::sleep(sf::seconds(10)); // Attendre 10 secondes avant de jouer à nouveau une musique
+        // Attendre un certain temps avant de jouer a nouveau une musique pour eviter une repetition rapide
+        sf::sleep(sf::seconds(10)); // Attendre 10 secondes avant de jouer a nouveau une musique
     }
 }

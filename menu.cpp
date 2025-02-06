@@ -190,7 +190,7 @@ void Menu::loadTextures()
     // Charger la texture du pion (unique) ; on appliquera une couleur sur le sprite.
     if (!pionTexture.loadFromFile("../pion.png")) {
         std::cerr << "Erreur: Impossible de charger pion.png\n";
-        // On ne fait pas exit(-1) pour laisser le menu tourner malgré tout
+        // On ne fait pas exit(-1) pour laisser le menu tourner malgre tout
     }
 }
 
@@ -206,7 +206,7 @@ void Menu::handleEvents(sf::RenderWindow& window)
             handleResize(event.size.width, event.size.height);
         }
 
-        // Selon l’état du menu
+        // Selon l’etat du menu
         if (currentState == MAIN_MENU) {
             handleMainMenuEvents(event, window);
         }
@@ -228,7 +228,7 @@ void Menu::handleMainMenuEvents(sf::Event& event, sf::RenderWindow& window)
             clickSound.play();
             // On va en Player Selection mode “ordinateurs”
             isPlayerComputer = true;
-            initPlayers(); // Crée 2 joueurs par défaut (J1, COM1)
+            initPlayers(); // Cree 2 joueurs par defaut (J1, COM1)
             currentState = PLAYER_SELECTION;
         }
         else if (playWithOthersButton.getGlobalBounds().contains(mousePos))
@@ -236,7 +236,7 @@ void Menu::handleMainMenuEvents(sf::Event& event, sf::RenderWindow& window)
             clickSound.play();
             // On va en Player Selection mode “multi local”
             isPlayerComputer = false;
-            initPlayers(); // Crée 2 joueurs par défaut (J1, J2)
+            initPlayers(); // Cree 2 joueurs par defaut (J1, J2)
             currentState = PLAYER_SELECTION;
         }
         else if (quitButton.getGlobalBounds().contains(mousePos))
@@ -283,7 +283,7 @@ void Menu::handlePlayerSelectionEvents(sf::Event& event, sf::RenderWindow& windo
         // Bouton Start
         if (startButton.getGlobalBounds().contains(mousePos)) {
             clickSound.play();
-            // On lance réellement le jeu => main.cpp fera jeu.run(players)
+            // On lance reellement le jeu => main.cpp fera jeu.run(players)
             currentState = GAME_RUNNING;
             return;
         }
@@ -293,7 +293,7 @@ void Menu::handlePlayerSelectionEvents(sf::Event& event, sf::RenderWindow& windo
 void Menu::initPlayers()
 {
     players.clear();
-     // Couleurs pastel dans l'ordre demandé
+     // Couleurs pastel dans l'ordre demande
     std::vector<sf::Color> pastelColors = {
         sf::Color(255, 255, 153),   // Jaune pastel
         sf::Color(255, 153, 153),   // Rouge pastel
@@ -302,7 +302,7 @@ void Menu::initPlayers()
     };
 
     if (isPlayerComputer) {
-        // “Play Alone” => J1, COM1 (2 joueurs par défaut)
+        // “Play Alone” => J1, COM1 (2 joueurs par defaut)
         PlayerInfo p1;
         p1.name   = "J1";
         p1.color  = pastelColors[0];
@@ -347,7 +347,7 @@ void Menu::initPlayers()
 void Menu::addPlayer()
 {
     if (players.size() >= 4) {
-        std::cout << "Déjà 4 joueurs, impossible d'en ajouter.\n";
+        std::cout << "Deja 4 joueurs, impossible d'en ajouter.\n";
         return;
     }
 
@@ -357,7 +357,7 @@ void Menu::addPlayer()
         sf::Color(153, 255, 153),   // Vert pastel
         sf::Color(153, 204, 255)    // Bleu pastel
     };
-    // Nouveau joueur => On détermine le next index
+    // Nouveau joueur => On determine le next index
     int index = (int)players.size(); // 2 => 2e ajout ; 3 => 3e ajout ...
     
     
@@ -368,8 +368,8 @@ void Menu::addPlayer()
     newP.sprite.setScale(0.08f,0.08f);
 
     if (isPlayerComputer) {
-        // J1 déjà créé => ensuite COM1, COM2, COM3…
-        // On a déjà 2 joueurs => index=2 => COM2
+        // J1 deja cree => ensuite COM1, COM2, COM3…
+        // On a deja 2 joueurs => index=2 => COM2
         // index=3 => COM3
         newP.color = pastelColors[index];   // ex: Blue => 4e
         newP.sprite.setColor(newP.color);
@@ -391,7 +391,7 @@ void Menu::addPlayer()
 
 void Menu::removePlayer()
 {
-    // On ne retire pas si on est déjà à 1 joueur
+    // On ne retire pas si on est deja a 1 joueur
     if (players.size() <= 2) {
         std::cout << "Impossible de tomber en-dessous de 2 joueur mate.\n";
         return;
@@ -515,7 +515,7 @@ void Menu::renderPlayerSelection(sf::RenderWindow& window)
     {
         window.draw(p.sprite);
 
-        // On dessine le nom du joueur à côté de son pion
+        // On dessine le nom du joueur a côte de son pion
         sf::Text txt;
         txt.setFont(font);
         txt.setString(p.name);
@@ -534,7 +534,7 @@ void Menu::drawButtonMenu(sf::RenderWindow& window,
                           sf::Text& text,
                           sf::Text& neonText)
 {
-    // “Halo” coloré
+    // “Halo” colore
     window.draw(neonText);
     // Fond du bouton
     window.draw(button);
