@@ -77,7 +77,7 @@ Jeu::Jeu(sf::RenderWindow& window, const sf::Font& font, const int& nmbpion,
     // Pion du joueur actuel (affiche a droite du texte des actions)
     txt_pionJoueurActuel.setTexture(pionTexture);
     txt_pionJoueurActuel.setOrigin(400.f, 400.f); // Centrer le sprite
-    txt_pionJoueurActuel.setScale(pionScale, pionScale); // Même echelle que les autres pions
+    txt_pionJoueurActuel.setScale(pionScale, pionScale); // Meme echelle que les autres pions
     txt_pionJoueurActuel.setColor(playerColors[joueurActuel]); // Couleur du premier joueur
     txt_pionJoueurActuel.setPosition(texteActions.getPosition().x + 150.f, texteActions.getPosition().y - 10.f);
 
@@ -175,7 +175,7 @@ void Jeu::handleEvents(sf::RenderWindow& window) {
 //     }
 // }
 void Jeu::gererClicPion(const sf::Vector2f& mousePos) {
-    // Si le joueur n'a pas encore lance le de, on empêche de cliquer sur un pion
+    // Si le joueur n'a pas encore lance le de, on empeche de cliquer sur un pion
     if (!diceRolled) {
         std::string message = "Joueur: " + playersInGame[joueurActuel].name +                               
                               "\nLancez le de \navant de jouer.";
@@ -192,7 +192,7 @@ void Jeu::gererClicPion(const sf::Vector2f& mousePos) {
         if (pion.sprite.getGlobalBounds().contains(mousePos)) {
             pionSelectionne = true;
             pionChoisi = &pion;
-            break;  // On arrête la boucle des qu'un pion valide est trouve
+            break;  // On arrete la boucle des qu'un pion valide est trouve
         }
     }
 
@@ -220,7 +220,8 @@ void Jeu::gererClicPion(const sf::Vector2f& mousePos) {
                                   "\nCe pion est bloque.\nChoisissez un \nautre pion.";
             texteActions.setString(message);
             std::cout << message << std::endl;
-            return false;
+            attenteValidation = true;
+            texteLancerDe.setString("OK");
         }
     } 
     else if (valeurDe == 6) {  
@@ -234,7 +235,8 @@ void Jeu::gererClicPion(const sf::Vector2f& mousePos) {
                               "\nCe pion ne peut \npas bouger.\nChoisissez un \nautre pion.\n ou ""ok"".";
         texteActions.setString(message);
         std::cout << message << std::endl;
-        return false;
+        attenteValidation = true;
+        texteLancerDe.setString("OK");
     }
 }
 
@@ -356,11 +358,11 @@ bool Jeu::avancerPion(PionInfo& pion) {
         case 3: caseAvantFinale = 13; caseFinalStart = 74; break; // Bleu
         default: return false;
     }
-     // ✅ Empêcher d'aller au-dela de la case avant finale sauf si en zone finale
+     // ✅ Empecher d'aller au-dela de la case avant finale sauf si en zone finale
     if (caseActuelle < caseAvantFinale && nouvelleCase > caseAvantFinale) {
         nouvelleCase = caseAvantFinale;
         std::string message = "Joueur: " + playersInGame[joueurActuel].name + 
-                            "\nVous êtes arrive a votre case finale!";
+                            "\nVous etes arrive a votre case finale!";
                             // Animation du deplacement du pion
     sf::Vector2f startPosition = pion.sprite.getPosition();
     sf::Vector2f endPosition = cases[nouvelleCase].position;
@@ -382,12 +384,12 @@ bool Jeu::avancerPion(PionInfo& pion) {
         depasseavantfinalejaune=true;
     }
 
-    // ✅ Vérification des pions de la même couleur en avant, uniquement sur le chemin réel
+    // ✅ Vérification des pions de la meme couleur en avant, uniquement sur le chemin réel
     for (const PionInfo& autrePion : playerPions[joueurActuel]) {   
         int caseAutrePion = trouverIndexCase(autrePion.sprite.getPosition());
 
         bool bloqueMouvement = false; // Initialisation en dehors de la boucle
-        // ✅ Cas 1 : Si on est dans un déplacement normal, vérifier si un pion de la même couleur bloque
+        // ✅ Cas 1 : Si on est dans un déplacement normal, vérifier si un pion de la meme couleur bloque
         if (caseActuelle < nouvelleCase && caseAutrePion > caseActuelle && caseAutrePion < nouvelleCase) {
            bloqueMouvement= true; 
         }
@@ -463,7 +465,7 @@ bool Jeu::avancerPion(PionInfo& pion) {
         }
     }
 
-    // ✅ Vérification des collisions avec un pion de la même couleur
+    // ✅ Vérification des collisions avec un pion de la meme couleur
     for (auto& pionsJoueur : playerPions) {
         for (auto& autrePion : pionsJoueur) {
             if (&autrePion != &pion && autrePion.isOut && autrePion.sprite.getPosition() == cases[nouvelleCase].position) {
