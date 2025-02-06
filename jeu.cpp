@@ -217,9 +217,10 @@ void Jeu::gererClicPion(const sf::Vector2f& mousePos) {
         } else {
             std::string message = "Joueur: " + playersInGame[joueurActuel].name + 
                                   "\nDe: " + std::to_string(valeurDe) +
-                                  "\nCe pion est bloque.\nChoisissez un autre pion.";
+                                  "\nCe pion est bloque.\nChoisissez un \nautre pion.";
             texteActions.setString(message);
             std::cout << message << std::endl;
+            return false;
         }
     } 
     else if (valeurDe == 6) {  
@@ -233,6 +234,7 @@ void Jeu::gererClicPion(const sf::Vector2f& mousePos) {
                               "\nCe pion ne peut \npas bouger.\nChoisissez un \nautre pion.\n ou ""ok"".";
         texteActions.setString(message);
         std::cout << message << std::endl;
+        return false;
     }
 }
 
@@ -257,31 +259,6 @@ void Jeu::lancerDe() {
     texteActions.setString(message);
     diceRolled = true; // Indiquer que le de a ete lance pour ce tour
 
-    // if (valeurDe == 6 ) {
-    //     // Verifier si au moins un pion est deja sorti
-    //     bool auMoinsUnPionSorti = std::any_of(playerPions[joueurActuel].begin(), playerPions[joueurActuel].end(), 
-    //                                         [](const PionInfo& pion) { return pion.isOut; });
-
-    //         if (!auMoinsUnPionSorti) {
-    //     message += "\n=> Sortez un pion.";
-    //     } else {
-    //         message += "\n=> Sortez un pion \nou avancez.";
-    //     }
-
-    //         texteActions.setString(message);
-        
-    // } else if (std::none_of(playerPions[joueurActuel].begin(), playerPions[joueurActuel].end(), [](const PionInfo& pion) { return pion.isOut; })) {
-    //     message += "\n=> Joueur suivant...";
-    //     texteActions.setString(message);
-    //     // Activer le mode "OK"
-    //     attenteValidation = true;
-    //     texteLancerDe.setString("OK");
-    //     return;
-    // } 
-    // else {
-    //     message += "\n=> Avancez un pion.";
-    //     texteActions.setString(message);
-    // }
     bool auMoinsUnPionSorti = std::any_of(playerPions[joueurActuel].begin(), playerPions[joueurActuel].end(), 
                                       [](const PionInfo& pion) { return pion.isOut; });
    bool peutAvancer = false; // Initialisation en dehors de la boucle
@@ -312,11 +289,16 @@ void Jeu::lancerDe() {
 bool Jeu::peutAvancerPion(PionInfo& pion) {
     int caseActuelle = trouverIndexCase(pion.sprite.getPosition());
     int nouvelleCase = (caseActuelle + valeurDe) % cases.size();
-
+  // ✅ Gestion du depassement de 55 pour revenir a 0 correctement
+    if (caseActuelle <= 55 && nouvelleCase > 55 ) {
+        nouvelleCase = (nouvelleCase - 56); // On revient a 0 et on continue
+    }
     // Verifier si la case cible est libre
-    for (const auto& autrePion : playerPions[joueurActuel]) {
-        if (&autrePion != &pion && autrePion.isOut && autrePion.sprite.getPosition() == cases[nouvelleCase].position) {
-            return false; // Case bloquee
+     for (auto& pionsJoueur : playerPions) {
+        for (auto& autrePion : pionsJoueur) {
+            if (&autrePion != &pion && autrePion.isOut && autrePion.sprite.getPosition() == cases[nouvelleCase].position) {
+                return false; // Case bloquee
+            }
         }
     }
     return true; // Deplacement possible
@@ -379,18 +361,78 @@ bool Jeu::avancerPion(PionInfo& pion) {
         nouvelleCase = caseAvantFinale;
         std::string message = "Joueur: " + playersInGame[joueurActuel].name + 
                             "\nVous êtes arrive a votre case finale!";
+                            // Animation du deplacement du pion
+    sf::Vector2f startPosition = pion.sprite.getPosition();
+    sf::Vector2f endPosition = cases[nouvelleCase].position;
+    sf::Clock clock;
+    while (clock.getElapsedTime().asSeconds() < 1.0f) {
+        float progress = clock.getElapsedTime().asSeconds();
+        pion.sprite.setPosition(startPosition + progress * (endPosition - startPosition));
+        render(window);
+    }
+    pion.sprite.setPosition(endPosition);
         texteActions.setString(message);
         std::cout << message << std::endl;
-        return false; // Ne peut pas aller plus loin
+        return true; // Ne peut pas aller plus loin
     }
+
     // ✅ Gestion du depassement de 55 pour revenir a 0 correctement
     if (caseActuelle <= 55 && nouvelleCase > 55 ) {
         nouvelleCase = (nouvelleCase - 56); // On revient a 0 et on continue
         depasseavantfinalejaune=true;
     }
 
+    // ✅ Vérification des pions de la même couleur en avant, uniquement sur le chemin réel
+    for (const PionInfo& autrePion : playerPions[joueurActuel]) {   
+        int caseAutrePion = trouverIndexCase(autrePion.sprite.getPosition());
 
-    // ✅ Cas 1 : Si le pion est sur la case avant finale, il doit entrer en "FinalStep = 1" seulement avec un 1 au de
+        bool bloqueMouvement = false; // Initialisation en dehors de la boucle
+        // ✅ Cas 1 : Si on est dans un déplacement normal, vérifier si un pion de la même couleur bloque
+        if (caseActuelle < nouvelleCase && caseAutrePion > caseActuelle && caseAutrePion < nouvelleCase) {
+           bloqueMouvement= true; 
+        }
+
+        // ✅ Cas 2 : Si on dépasse 55 et revient à 0, il faut aussi vérifier les pions après 55
+        if (depasseavantfinalejaune && (caseAutrePion <= nouvelleCase || caseAutrePion > caseActuelle)) {
+            bloqueMouvement = true;
+        }
+
+        if (bloqueMouvement && &autrePion != &pion && autrePion.isOut) {
+            std::string message = "Joueur: " + playersInGame[joueurActuel].name + 
+                                "\nMouv bloque!\nUn de vos \npions est devant.";
+            texteActions.setString(message);
+            std::cout << message << std::endl;
+            return false; // Mouvement bloqué
+        }
+    }
+  // ✅ Vérification des pions adverses à capturer
+    for (auto& pionsJoueur : playerPions) {
+        for (auto& autrePion : pionsJoueur) {
+            int caseAutrePion = trouverIndexCase(autrePion.sprite.getPosition());
+
+            // 📌 Capture uniquement si on **passe après** le pion adverse !
+            bool doitCapturer = false;
+
+            // ✅ Cas normal : on dépasse un pion adverse sans retour à 0
+            if (caseAutrePion >= caseActuelle && caseAutrePion + 1 <= nouvelleCase) {
+                doitCapturer = true;
+            }
+
+            // ✅ Cas spécial : si on repasse par 0, on doit aussi vérifier les cases 0-55
+            if (depasseavantfinalejaune && (caseAutrePion + 1 <= nouvelleCase || caseAutrePion > caseActuelle)) {
+                doitCapturer = true;
+            }
+
+            // 📌 Vérifier que le pion capturé n'est pas dans la zone finale
+            if (doitCapturer && autrePion.isOut && &autrePion != &pion && cases[caseAutrePion].type != "Final") {
+                autrePion.sprite.setPosition(autrePion.startPosition);
+                autrePion.isOut = false;
+                std::cout << "🔥 Pion adverse renvoyé en prison ! (Case " << caseAutrePion << ")" << std::endl;
+            }
+        }
+    }
+
+    // ✅ Cas 1 : Si le pion est sur la case avant finale, il doit entrer en "FinalStep = 1"  avec un 1 ou plus au de
     if (caseActuelle == caseAvantFinale) {
         if (valeurDe >= 1) {
             nouvelleCase = caseFinalStart; // Aller en FinalStep 1
@@ -421,30 +463,21 @@ bool Jeu::avancerPion(PionInfo& pion) {
         }
     }
 
-  
-
-    // ✅ Verifier si la case cible contient un pion de la même couleur (on ne peut pas l'ecraser)
-    for (const PionInfo& autrePion : playerPions[joueurActuel]) {
-        if (&autrePion != &pion && autrePion.isOut && autrePion.sprite.getPosition() == cases[nouvelleCase].position) {
-            std::string message = "Joueur: " + playersInGame[joueurActuel].name + 
-                                "\nDeplacement impossible!\nUn de vos pions bloque.";
-            texteActions.setString(message);
-            std::cout << message << std::endl;
-            return false; // Mouvement bloque
+    // ✅ Vérification des collisions avec un pion de la même couleur
+    for (auto& pionsJoueur : playerPions) {
+        for (auto& autrePion : pionsJoueur) {
+            if (&autrePion != &pion && autrePion.isOut && autrePion.sprite.getPosition() == cases[nouvelleCase].position) {
+                std::string message;
+                message = "Joueur: " + playersInGame[joueurActuel].name + 
+                "\nDeplacement impossible!\nUn pion adverse bloque.";
+                texteActions.setString(message);
+                std::cout << message << std::endl;
+                return false; // Mouvement bloqué
+                }
+            }
         }
-    }
-
-    // ✅ Verifier si le pion doit sauter un pion de la même couleur
-    for (const PionInfo& autrePion : playerPions[joueurActuel]) {   
-        int caseAutrePion = trouverIndexCase(autrePion.sprite.getPosition());
-        if (&autrePion != &pion && autrePion.isOut && ((caseAutrePion > caseActuelle &&caseAutrePion < nouvelleCase)||(depasseavantfinalejaune==true&&caseAutrePion <= 55))) {
-            std::string message = "Joueur: " + playersInGame[joueurActuel].name + 
-                                "\nMouv bloque!\nUn de vos \npions est devant.";
-            texteActions.setString(message);
-            std::cout << message << std::endl;
-            return false; // Mouvement bloque
-        }
-    }
+   
+    
     // Animation du deplacement du pion
     sf::Vector2f startPosition = pion.sprite.getPosition();
     sf::Vector2f endPosition = cases[nouvelleCase].position;
@@ -463,41 +496,7 @@ bool Jeu::avancerPion(PionInfo& pion) {
 
     std::string message = "Joueur: " + playersInGame[joueurActuel].name + "\nPion avance !";
     texteActions.setString(message);// Log the new position to the console
-    std::cout << "Pion avance a la position: (" << cases[nouvelleCase].position.x << ", " << cases[nouvelleCase].position.y << ")" << std::endl;
-
-    // // Verifier si un pion adverse est sur la nouvelle case ou a ete saute
-    // if (cases[nouvelleCase].type != "Final"){
-    //     for (auto& pionsJoueur : playerPions) {
-    //         for (auto& autrePion : pionsJoueur) {
-    //             int caseAutrePion = trouverIndexCase(autrePion.sprite.getPosition());
-    //             if (autrePion.isOut && &autrePion != &pion && 
-    //                 (autrePion.sprite.getPosition() == pion.sprite.getPosition() || 
-    //                 (caseAutrePion > caseActuelle && caseAutrePion <= nouvelleCase))) {
-    //                 // Remettre le pion adverse dans sa prison
-    //                 autrePion.sprite.setPosition(autrePion.startPosition);
-    //                 autrePion.isOut = false;
-    //                 std::cout << "Pion adverse renvoye a la prison: (" << autrePion.startPosition.x << ", " << autrePion.startPosition.y << ")" << std::endl;
-    //             }
-    //         }
-    //     }
-    // }
-    // ✅ Verifier si un pion adverse doit être renvoye en prison
-    for (auto& pionsJoueur : playerPions) {
-        for (auto& autrePion : pionsJoueur) {
-            int caseAutrePion = trouverIndexCase(autrePion.sprite.getPosition());
-
-            // 📌 **Renvoyer en prison seulement si on passe APReS le pion adverse !**
-            if (autrePion.isOut && &autrePion != &pion && ((
-                caseAutrePion > caseActuelle && caseAutrePion < nouvelleCase )||(depasseavantfinalejaune==true&&caseAutrePion <= 55))&& 
-                cases[caseAutrePion].type != "Final") { 
-                
-                autrePion.sprite.setPosition(autrePion.startPosition);
-                autrePion.isOut = false;
-                std::cout << "🔥 Pion adverse renvoye en prison !" << std::endl;
-            }
-        }
-    }
-    
+    std::cout << "Pion avance a la position: (" << cases[nouvelleCase].position.x << ", " << cases[nouvelleCase].position.y << ")" << std::endl; 
 
     message = "Joueur: " + playersInGame[joueurActuel].name + "\nPion avance !";
     texteActions.setString(message);
