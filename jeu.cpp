@@ -290,25 +290,56 @@ void Jeu::lancerDe() {
 }
 bool Jeu::peutAvancerPion(PionInfo& pion) {
     int caseActuelle = trouverIndexCase(pion.sprite.getPosition());
-    int nouvelleCase = (caseActuelle + valeurDe) % cases.size();
-  // ✅ Gestion du depassement de 55 pour revenir a 0 correctement
-    if (caseActuelle <= 55 && nouvelleCase > 55 ) {
-        nouvelleCase = (nouvelleCase - 56); // On revient a 0 et on continue
-    } 
+    int nouvelleCase = caseActuelle + 1; // En Final, toujours avancer d'une case
+
+    // ✅ Si on est en zone "Final", avancer toujours de 1 case seulement
     if (cases[caseActuelle].type == "Final") {
-        int finalStep = cases[caseActuelle].finalStep; // Étape actuelle en zone finale
-        int nouvelleStep = finalStep + 1; // Étape cible
-        if (valeurDe < nouvelleStep){
-        return false; // Ne peut pas avancer
+        int finalStep = cases[caseActuelle].finalStep; // Étape actuelle
+        int nouvelleStep = finalStep + 1; // Prochaine étape
+        if (nouvelleStep > 6) {
+            return false; // 🚫 Ne peut pas avancer plus loin
         }
+
+        // ✅ Vérifier si la case suivante est occupée
+        for (auto& pionsJoueur : playerPions) {
+            for (auto& autrePion : pionsJoueur) {
+                if (&autrePion != &pion && autrePion.isOut && autrePion.sprite.getPosition() == cases[nouvelleCase].position) {
+                    return false; // La case est bloquée
+                }
+            }
+        }
+        return true; // ✅ Le pion peut avancer d'une case
     }
+
+    // ✅ Si le pion n'est pas en Final, utiliser le comportement normal
+    nouvelleCase = (caseActuelle + valeurDe) % cases.size();
+
+    if (caseActuelle <= 55 && nouvelleCase > 55) {
+        nouvelleCase = (nouvelleCase - 56); // Gestion du retour à 0
+    }
+
     // Verifier si la case cible est libre
+    sf::Vector2f sortiePosition;
+    int caseAvantFinale;
+    switch (joueurActuel) {
+        case 0: sortiePosition = getCasePosition(0, joueurActuel);  caseAvantFinale = 55; break;
+        case 1: sortiePosition = getCasePosition(28, joueurActuel);  caseAvantFinale = 27;break;
+        case 2: sortiePosition = getCasePosition(42, joueurActuel);  caseAvantFinale = 41;break;
+        case 3: sortiePosition = getCasePosition(14, joueurActuel); caseAvantFinale = 13; break;
+        default: return false;
+    }
+    if (caseActuelle < caseAvantFinale && nouvelleCase > caseAvantFinale) {
+        nouvelleCase = caseAvantFinale;
      for (auto& pionsJoueur : playerPions) {
         for (auto& autrePion : pionsJoueur) {
             if (&autrePion != &pion && autrePion.isOut && autrePion.sprite.getPosition() == cases[nouvelleCase].position) {
                 return false; // Case bloquee
             }
+            if ((!pion.isOut)&&(&autrePion != &pion && autrePion.isOut && autrePion.sprite.getPosition() == sortiePosition)) {
+             return false; // Case bloquee
+            }
         }
+    }
     }
     return true; // Deplacement possible
 }
@@ -329,6 +360,8 @@ bool Jeu::sortirPion(PionInfo& pion) {
             std::string message = "Joueur: " + playersInGame[joueurActuel].name + "\nSortie de prison \ndeja prise!";
             texteActions.setString(message);
             std::cout << message << std::endl;
+            attenteValidation = true;
+            texteLancerDe.setString("OK");
             return false; // Permet au joueur de re-choisir
             }
         }
@@ -360,8 +393,8 @@ bool Jeu::avancerPion(PionInfo& pion) {
     bool depasseavantfinalejaune=false;
     switch (joueurActuel) {
         case 0: caseAvantFinale = 55; caseFinalStart = 56; break; // Jaune
-        case 1: caseAvantFinale = 27; caseFinalStart =68 ; break; // Rouge
-        case 2: caseAvantFinale = 41; caseFinalStart =78 ; break; // Vert
+        case 1: caseAvantFinale = 27; caseFinalStart =68; break; // Rouge
+        case 2: caseAvantFinale = 41; caseFinalStart =74; break; // Vert
         case 3: caseAvantFinale = 13; caseFinalStart =62 ; break; // Bleu
         default: return false;
     }
@@ -417,29 +450,40 @@ bool Jeu::avancerPion(PionInfo& pion) {
   // ✅ Vérification des pions adverses à capturer
     for (auto& pionsJoueur : playerPions) {
         for (auto& autrePion : pionsJoueur) {
-            int caseAutrePion = trouverIndexCase(autrePion.sprite.getPosition());
+            if (cases[caseActuelle].type != "Final" || 
+                (cases[caseActuelle].type != "Avantfinal" && autrePion.pionId != pion.pionId)) {
 
-            // 📌 Capture uniquement si on **passe après** le pion adverse !
-            bool doitCapturer = false;
+                int caseAutrePion = trouverIndexCase(autrePion.sprite.getPosition());
 
-            // ✅ Cas normal : on dépasse un pion adverse sans retour à 0
-            if (caseAutrePion >= caseActuelle && caseAutrePion + 1 <= nouvelleCase) {
-                doitCapturer = true;
-            }
+                // 📌 Capture uniquement si on **passe après** le pion adverse !
+                bool doitCapturer = false;
 
-            // ✅ Cas spécial : si on repasse par 0, on doit aussi vérifier les cases 0-55
-            if (depasseavantfinalejaune && (caseAutrePion + 1 <= nouvelleCase || caseAutrePion > caseActuelle)) {
-                doitCapturer = true;
-            }
+                // ✅ Cas normal : on dépasse un pion adverse sans retour à 0
+                if (caseAutrePion >= caseActuelle && caseAutrePion + 1 <= nouvelleCase) {
+                    doitCapturer = true;
+                }
 
-            // 📌 Vérifier que le pion capturé n'est pas dans la zone finale
-            if (doitCapturer && autrePion.isOut && &autrePion != &pion && cases[caseAutrePion].type != "Final") {
-                autrePion.sprite.setPosition(autrePion.startPosition);
-                autrePion.isOut = false;
-                std::cout << "🔥 Pion adverse renvoyé en prison ! (Case " << caseAutrePion << ")" << std::endl;
+                // ✅ Cas spécial : si on repasse par 0, on doit aussi vérifier les cases 0-55
+                if (depasseavantfinalejaune && (caseAutrePion + 1 <= nouvelleCase || caseAutrePion > caseActuelle)) {
+                    doitCapturer = true;
+                }
+
+                // 🚨 Vérification spéciale pour éviter la capture dans le cas "Avantfinal -> Final"
+                if (cases[caseActuelle].type == "Avantfinal" && cases[caseAutrePion].type == "Parcours" 
+                    && caseAutrePion == caseActuelle + 1 && nouvelleCase >= 56) {
+                    continue; // On saute cette itération pour ne pas capturer le pion
+                }
+
+                // 📌 Vérifier que le pion capturé n'est pas dans la zone finale
+                if (doitCapturer && autrePion.isOut && &autrePion != &pion && cases[caseAutrePion].type != "Final") {
+                    autrePion.sprite.setPosition(autrePion.startPosition);
+                    autrePion.isOut = false;
+                    std::cout << "🔥 Pion adverse renvoyé en prison ! (Case " << caseAutrePion << ")" << std::endl;
+                }
             }
         }
     }
+
 
     // ✅ Cas 1 : Si le pion est sur la case avant finale, il doit entrer en "FinalStep = 1"  avec un 1 ou plus au de
     if (caseActuelle == caseAvantFinale) {
@@ -460,28 +504,38 @@ bool Jeu::avancerPion(PionInfo& pion) {
     if (cases[caseActuelle].type == "Final") {
         int finalStep = cases[caseActuelle].finalStep; // Étape actuelle en zone finale
         int nouvelleStep = finalStep + 1; // Étape cible
-
-        if (valeurDe >= nouvelleStep) { 
-            nouvelleCase = caseFinalStart + finalStep; // Déplacer d'une seule case vers l'avant
-        } else {
-            std::string message = "Joueur: " + playersInGame[joueurActuel].name + 
-                                "\nDe: " + std::to_string(valeurDe) +
-                                "\nVous devez faire " + std::to_string(nouvelleStep) + 
-                                " ou plus pour avancer !";
+        if(valeurDe>=nouvelleStep){
+            // ✅ Vérifier si on dépasse "FinalStep 6" = victoire
+            if (nouvelleStep == 6) {
+            std::string message = "🎉 " + playersInGame[joueurActuel].name + " a gagné la partie ! 🎉";
             texteActions.setString(message);
             std::cout << message << std::endl;
-            return false; // Ne peut pas avancer
+            isRunning = false; // Arrêter le jeu
+            return true;
+        }
+            // ✅ Vérifier si la case suivante est disponible
+            nouvelleCase = caseActuelle + 1;
+            for (auto& pionsJoueur : playerPions) {
+                for (auto& autrePion : pionsJoueur) {
+                    if (&autrePion != &pion && autrePion.isOut && autrePion.sprite.getPosition() == cases[nouvelleCase].position) {
+                        std::string message = "Joueur: " + playersInGame[joueurActuel].name + 
+                                            "\nDeplac impossible!\nUn pion bloque \nla case finale.";
+                        texteActions.setString(message);
+                        return false; // Mouvement bloqué
+                    }
+                }
+            }
         }
     }
 
 
-    // ✅ Vérification des collisions avec un pion de la meme couleur
+    // ✅ Vérification des collisions avec un pion 
     for (auto& pionsJoueur : playerPions) {
         for (auto& autrePion : pionsJoueur) {
             if (&autrePion != &pion && autrePion.isOut && autrePion.sprite.getPosition() == cases[nouvelleCase].position) {
                 std::string message;
                 message = "Joueur: " + playersInGame[joueurActuel].name + 
-                "\nDeplacement impossible!\nUn pion adverse bloque.";
+                "\nDeplac impossible!\nUn pion bloque.";
                 texteActions.setString(message);
                 std::cout << message << std::endl;
                 return false; // Mouvement bloqué
@@ -622,16 +676,16 @@ void Jeu::generateParcours() {
     }
     // Ajouter les 6 cases "Finale" avant "Victoire" 
     for (i = 0; i < 6; ++i){
-        cases.push_back({greenStart + sf::Vector2f(-6 * delta, -7 * delta)+ sf::Vector2f(delta,0), "Final", 0,i+1}); //yellow final
+        cases.push_back({greenStart + sf::Vector2f(-6 * delta, -7 * delta)+ sf::Vector2f((i+1)*delta,0), "Final", 0,i+1}); //yellow final
     } 
     for (i = 0; i < 6; ++i){
-        cases.push_back({yellowStart + sf::Vector2f(7 * delta, -6 * delta)+ sf::Vector2f(0,delta), "Final", 3,i+1}); //blue final
+        cases.push_back({yellowStart + sf::Vector2f(7 * delta, -6 * delta)+ sf::Vector2f(0,(i+1)*delta), "Final", 3,i+1}); //blue final
     } 
     for (i = 0; i < 6; ++i){
-        cases.push_back({blueStart + sf::Vector2f(6 * delta, 7 * delta)+ sf::Vector2f(-delta,0), "Final", 1,i+1}); //red final
+        cases.push_back({blueStart + sf::Vector2f(6 * delta, 7 * delta)+ sf::Vector2f(-(i+1)*delta,0), "Final", 1,i+1}); //red final
     } 
      for (i = 0; i < 6; ++i){
-        cases.push_back({redStart + sf::Vector2f(-7 * delta, 6 * delta)+ sf::Vector2f(0,-delta), "Final", 2,i+1});//green final
+        cases.push_back({redStart + sf::Vector2f(-7 * delta, 6 * delta)+ sf::Vector2f(0,-(i+1)*delta), "Final", 2,i+1});//green final
     }  
     
     // // Ajouter la case "Victoire" au centre
@@ -644,12 +698,36 @@ void Jeu::generateParcours() {
 void Jeu::run(sf::RenderWindow& window) {
     isRunning = true;
 
-    while (window.isOpen() && isRunning) {
+    while (window.isOpen()) {
         handleEvents(window);
         update();
         render(window);
+
+        // Si le jeu est terminé, afficher un écran de fin et attendre que le joueur ferme la fenêtre
+        if (!isRunning) {
+            sf::Text texteFin;
+            texteFin.setFont(font);
+            texteFin.setString("🎉 " + playersInGame[joueurActuel].name + " a gagné ! 🎉\nCliquez pour quitter.");
+            texteFin.setCharacterSize(30);
+            texteFin.setFillColor(sf::Color::Black);
+            texteFin.setPosition(100.f, 300.f);
+
+            while (window.isOpen()) {
+                sf::Event event;
+                while (window.pollEvent(event)) {
+                    if (event.type == sf::Event::Closed || event.type == sf::Event::MouseButtonPressed) {
+                        window.close(); // Fermer proprement
+                    }
+                }
+
+                window.clear(sf::Color::White);
+                window.draw(texteFin);
+                window.display();
+            }
+        }
     }
 }
+
 
 // Mettre a jour la logique du jeu (placeholder pour futur ajout)
 void Jeu::update() {
