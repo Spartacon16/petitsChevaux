@@ -357,7 +357,8 @@ bool Jeu::sortirPion(PionInfo& pion) {
     for (auto& pionsJoueur : playerPions) {
         for (auto& autrePion : pionsJoueur){
             if (&autrePion != &pion && autrePion.isOut && autrePion.sprite.getPosition() == sortiePosition) {
-            std::string message = "Joueur: " + playersInGame[joueurActuel].name + "\nSortie de prison \ndeja prise!";
+            std::string message = "Joueur: " + playersInGame[joueurActuel].name +
+            "\nDe: " + std::to_string(valeurDe) + "\nSortie de prison \ndeja prise!";
             texteActions.setString(message);
             std::cout << message << std::endl;
             attenteValidation = true;
