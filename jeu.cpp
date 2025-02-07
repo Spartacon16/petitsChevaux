@@ -297,8 +297,14 @@ bool Jeu::peutAvancerPion(PionInfo& pion) {
         int finalStep = cases[caseActuelle].finalStep; // Étape actuelle
         int nouvelleStep = finalStep + 1; // Prochaine étape
         if (nouvelleStep > 6) {
-            return false; // 🚫 Ne peut pas avancer plus loin
-        }
+            if( valeurDe == 6) {
+                std::string message = "🎉 " + playersInGame[joueurActuel].name + " a gagné la partie ! 🎉";
+                texteActions.setString(message);
+                std::cout << message << std::endl;
+                isRunning = false; // Arrêter le jeu
+                return true;
+            }
+           }
 
         // ✅ Vérifier si la case suivante est occupée
         for (auto& pionsJoueur : playerPions) {
@@ -361,7 +367,6 @@ bool Jeu::sortirPion(PionInfo& pion) {
             "\nDe: " + std::to_string(valeurDe) + "\nSortie de prison \ndeja prise!";
             texteActions.setString(message);
             std::cout << message << std::endl;
-            attenteValidation = true;
             texteLancerDe.setString("OK");
             return false; // Permet au joueur de re-choisir
             }
@@ -526,6 +531,8 @@ bool Jeu::avancerPion(PionInfo& pion) {
                     }
                 }
             }
+        }else{
+            return false;
         }
     }
 
@@ -578,6 +585,7 @@ void Jeu::passerAuJoueurSuivant() {
         if(valeurDe==6){
             valeurDe=0;
             diceRolled=false;
+            attenteValidation = true;
             std::string message = "Joueur: " + playersInGame[joueurActuel].name + "\n=> ReLancez le de";
         texteActions.setString(message);
         std::cout << message << std::endl;
