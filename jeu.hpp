@@ -37,7 +37,7 @@ public:
     int trouverIndexCase(const sf::Vector2f& position);              // Trouver l'index d'une case
     void setPlayers(const std::vector<PlayerInfo>& playersSelected); // Définir les joueurs sélectionnés
     void run(sf::RenderWindow& window);   
-    
+    sf::Texture backgroundTexture;
 private:                         
     void lancerDe() ;
     void handleEvents(sf::RenderWindow& window);                     // Gestion des événements

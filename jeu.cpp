@@ -512,7 +512,7 @@ bool Jeu::avancerPion(PionInfo& pion) {
         int nouvelleStep = finalStep + 1; // Étape cible
         if(valeurDe>=nouvelleStep){
             // ✅ Vérifier si on dépasse "FinalStep 6" = victoire
-            if (nouvelleStep == 6) {
+            if (nouvelleStep > 6) {
             std::string message = "🎉 " + playersInGame[joueurActuel].name + " a gagné la partie ! 🎉";
             texteActions.setString(message);
             std::cout << message << std::endl;
@@ -532,6 +532,12 @@ bool Jeu::avancerPion(PionInfo& pion) {
                 }
             }
         }else{
+            std::string message = "Joueur: " + playersInGame[joueurActuel].name +
+            "\nDe: " + std::to_string(valeurDe) + "\nDeplac impossible!\nPas assez\npour avancer!";
+            texteActions.setString(message);
+            std::cout << message << std::endl;
+            texteLancerDe.setString("OK");
+            attenteValidation = true;
             return false;
         }
     }
@@ -713,13 +719,35 @@ void Jeu::run(sf::RenderWindow& window) {
 
         // Si le jeu est terminé, afficher un écran de fin et attendre que le joueur ferme la fenêtre
         if (!isRunning) {
+            // Charger l'image de fond 2
+            if (!backgroundTexture.loadFromFile("../gagne.jpg")) {
+                std::cerr << "Erreur : Impossible de charger le background.\n";
+                exit(-1);
+            }
+
+            // ✅ Création du texte de fin
             sf::Text texteFin;
             texteFin.setFont(font);
             texteFin.setString("🎉 " + playersInGame[joueurActuel].name + " a gagné ! 🎉\nCliquez pour quitter.");
-            texteFin.setCharacterSize(30);
-            texteFin.setFillColor(sf::Color::Black);
-            texteFin.setPosition(100.f, 300.f);
+            texteFin.setCharacterSize(24); // 📌 Taille du texte réduite
+            texteFin.setFillColor(sf::Color::White); // 📌 Texte en blanc pour contraste
 
+            // ✅ Création du fond du texte (rectangle)
+            sf::RectangleShape fondTexte;
+            fondTexte.setSize(sf::Vector2f(400.f, 100.f)); // 📌 Taille ajustée du fond
+            fondTexte.setFillColor(sf::Color(0, 0, 0, 180)); // 📌 Noir semi-transparent
+            fondTexte.setOutlineThickness(2);
+            fondTexte.setOutlineColor(sf::Color::White); // 📌 Contour blanc pour démarquer
+
+            // ✅ Centrer le texte et son fond sur l'écran
+            sf::FloatRect textBounds = texteFin.getLocalBounds();
+            sf::Vector2f position(300.f - textBounds.width / 2.f, 300.f - textBounds.height / 2.f);
+            texteFin.setPosition(position);
+
+            // Positionner le fond légèrement derrière le texte
+            fondTexte.setPosition(position.x - 10, position.y - 10);
+
+            // ✅ Boucle d'affichage du message de fin
             while (window.isOpen()) {
                 sf::Event event;
                 while (window.pollEvent(event)) {
@@ -728,11 +756,13 @@ void Jeu::run(sf::RenderWindow& window) {
                     }
                 }
 
-                window.clear(sf::Color::White);
-                window.draw(texteFin);
+                window.clear();
+                window.draw(fondTexte); // 📌 Dessiner le fond du texte
+                window.draw(texteFin); // 📌 Dessiner le texte de fin
                 window.display();
             }
         }
+
     }
 }
 
