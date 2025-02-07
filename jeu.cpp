@@ -585,7 +585,6 @@ void Jeu::passerAuJoueurSuivant() {
         if(valeurDe==6){
             valeurDe=0;
             diceRolled=false;
-            attenteValidation = true;
             std::string message = "Joueur: " + playersInGame[joueurActuel].name + "\n=> ReLancez le de";
         texteActions.setString(message);
         std::cout << message << std::endl;
