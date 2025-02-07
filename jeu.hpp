@@ -38,6 +38,7 @@ public:
     void setPlayers(const std::vector<PlayerInfo>& playersSelected); // Définir les joueurs sélectionnés
     void run(sf::RenderWindow& window);   
     sf::Texture backgroundTexture;
+    sf::Sprite backgroundSprite;
 private:                         
     void lancerDe() ;
     void handleEvents(sf::RenderWindow& window);                     // Gestion des événements

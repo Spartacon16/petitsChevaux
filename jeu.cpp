@@ -724,7 +724,12 @@ void Jeu::run(sf::RenderWindow& window) {
                 std::cerr << "Erreur : Impossible de charger le background.\n";
                 exit(-1);
             }
-
+            backgroundSprite.setTexture(backgroundTexture);
+                backgroundSprite.setColor(sf::Color(255, 255, 255, 200));
+                backgroundSprite.setScale(
+                    float(window.getSize().x) / backgroundTexture.getSize().x,
+                    float(window.getSize().y) / backgroundTexture.getSize().y
+    );
             // ✅ Création du texte de fin
             sf::Text texteFin;
             texteFin.setFont(font);
